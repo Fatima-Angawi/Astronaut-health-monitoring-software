@@ -22,15 +22,14 @@ assigned to: Fatima Angawi
 description:
 solid understanding and data input
 
-assigned to: Layan AlQurashi
+assigned to: Layan 
 
 
 ## # Task: R18 bone fracture check indicator column for guidance 
 description:
 solid understanding and data input
+assigned to: LAYAN 
 
-assigned to: 
-solid understanding and data input
 
 ## # Task: R10b	Cardiovascular Adaptations
 description:
