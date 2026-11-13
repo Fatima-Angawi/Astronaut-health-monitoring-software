@@ -1,0 +1,50 @@
+{
+    "project": "R18 Bone Health",
+    "mission_days": 180,
+    "mission_start_date": "2026-11-15",
+    "sources": {
+        "preflight_DXA": "NASA Fracture Evidence Report, p.15",
+        "aBMD_total_hip": "V1 4026, Rev C p.39",
+        "aBMD_femoral_neck": "V1 4027, Rev C p.39",
+        "aBMD_lumbar_spine": "V1 4026, Rev C p.39",
+        "aBMD_limits": {
+            "total_hip": "95% of individual preflight value; V1 4027",
+            "lumbar_spine": "95% of individual preflight value; V1 4027",
+            "femoral_neck": "90% of individual preflight value; V1 4027"
+        },
+        "ARED_rates": "NASA Fracture Evidence Report, Table 4, p.22",
+        "pre_ARED_rates": "NASA Fracture Evidence Report, Table 4, p.22",
+        "exercise_load": "NASA Fracture Evidence Report, p.22",
+        "vitamin_D": "NASA Fracture Evidence Report, p.14",
+        "loaded_activity": "NASA Fracture Evidence Report, p.12",
+        "postflight_DXA": "NASA Fracture Evidence Report, p.15",
+        "biomarkers": "NASA Fracture Evidence Report, pp.13-15"
+    },
+    "bmd_reference_limits_pct": {
+        "total_hip": 95,
+        "lumbar_spine": 95,
+        "femoral_neck": 90
+    },
+    "monthly_bmd_change_rates_pct": {
+        "ARED": {
+            "trochanter": -0.5,
+            "lumbar_spine": -0.32
+        },
+        "pre_ARED": {
+            "trochanter": -1.56,
+            "lumbar_spine": -1.06
+        }
+    },
+    "assumptions": [
+        "All generated astronaut measurements are synthetic, not actual NASA records.",
+        "Total hip and femoral neck projections use the trochanter rate as a proxy.",
+        "The NASA Table 4 does not provide a separate femoral-neck rate.",
+        "The trochanter proxy for total hip is also an assumption.",
+        "BMD projections use a linear accumulation of the monthly rates.",
+        "ARED and pre-ARED projections are both generated because the verified exercise prescription is not available.",
+        "Synthetic biomarker values use relative indices, not clinical units.",
+        "Preflight aBMD and T-score values are simulated examples.",
+        "The mission timeline is a shared simulator assumption."
+    ],
+    "exercise_prescription_minutes_per_day": null
+}
