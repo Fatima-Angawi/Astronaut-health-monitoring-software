@@ -18,11 +18,11 @@ DONKI.py represents the ground-based space weather alert; in a real mission, thi
 assigned to: Fatima Angawi
 
 
-## # Task
+## # Task: Behavioral / Cognitive Changes Id: R02e in sheet
 description:
+solid understanding and data input
 
-
-assigned to: 
+assigned to: Layan AlQurashi
 
 
 ## # Task
