@@ -16,10 +16,13 @@ The only human spaceflight data (Inspiration4) is molecular and clinical blood d
 Therefore crew indicators are simulated from HRP Evidence Report values; environment data (radiation, CO₂, SPE) is real NASA data.
 
 ---
-## # Task: SEP Data preparation and pipeline
+## # Task: SEP and radiation Data preparation and pipeline
 description: SEP is one of the inputs that needs to be watched for radiation risk warning
 DONKI.py represents the ground-based space weather alert; in a real mission, this would come from mission control.
 
+RadLab gives absorbed dose; converting to effective dose needs NASA’s quality-factor model (Radiation ER p43), so we display it separately
+
+Real ISS data (NASA RadLab, DosTel1) during the 12 Feb 2024 SPE: no measurable rise inside the station, consistent with HRP Radiation ER p12. The risk is during EVA, so our alert combines the DONKI SPE onset with the EVA schedule.
 
 assigned to: Fatima Angawi
 
