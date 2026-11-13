@@ -9,6 +9,12 @@ strategies that ensure success in performing those tasks on an autonomous missio
 We develop this software to integrate these standards and guidelines to deliver an app that can simplify
 the process of monitoring, warning and protecting astronaunt health during their space missions  
 
+## Data availability
+We ran 33 systematic queries on NASA OSDR (355 unique studies). 
+No open dataset contained human sleep, PVT, mood, heart rate, blood pressure, or SpO₂.
+The only human spaceflight data (Inspiration4) is molecular and clinical blood data. 
+Therefore crew indicators are simulated from HRP Evidence Report values; environment data (radiation, CO₂, SPE) is real NASA data.
+
 ---
 ## # Task: SEP Data preparation and pipeline
 description: SEP is one of the inputs that needs to be watched for radiation risk warning
