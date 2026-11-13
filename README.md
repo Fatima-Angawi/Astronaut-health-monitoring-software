@@ -27,12 +27,12 @@ assigned to: Layan AlQurashi
 
 ## # Task: R18 bone fracture check indecator column for guidance 
 description:
-
+solid understanding and data input
 
 assigned to: 
+solid understanding and data input
 
-
-## # Task
+## # Task: R10b	Cardiovascular Adaptations
 description:
 
 
