@@ -12,6 +12,7 @@ the process of monitoring, warning and protecting astronaunt health during their
 ---
 ## # Task: SEP Data preparation and pipeline
 description: SEP is one of the inputs that needs to be watched for radiation risk warning
+DONKI.py represents the ground-based space weather alert; in a real mission, this would come from mission control.
 
 
 assigned to: Fatima Angawi
