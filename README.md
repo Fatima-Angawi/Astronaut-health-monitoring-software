@@ -18,14 +18,14 @@ DONKI.py represents the ground-based space weather alert; in a real mission, thi
 assigned to: Fatima Angawi
 
 
-## # Task: Behavioral / Cognitive Changes Id: R02e in sheet
+## # Task: Behavioral / Cognitive Changes Id: R02e and R02e in sheet
 description:
 solid understanding and data input
 
 assigned to: Layan AlQurashi
 
 
-## # Task: R18 bone fracture check indecator column for guidance 
+## # Task: R18 bone fracture check indicator column for guidance 
 description:
 solid understanding and data input
 
@@ -37,6 +37,23 @@ description:
 
 
 assigned to: 
+
+
+## # Task: hustle closed environment
+description:
+look for data
+
+assigned to: 
+
+
+## # Task: sleep loss indicators 
+description:
+look for data
+
+assigned to: 
+
+
+
 
 ## # Table of Contents
 
