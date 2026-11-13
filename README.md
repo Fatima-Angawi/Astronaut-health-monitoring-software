@@ -35,8 +35,11 @@ assigned to: Layan
 description:
 solid understanding and data input
 
+Average density loss	1–1.5% per month
+
 Projected bone loss = months in flight × loss rate, using the with-ARED rate if exercise is logged and the pre-ARED rate if not (Table 4, p22). That shows the astronaut, with evidence, what missed exercise costs.
 
+later:
 (for context) Mission phase: microgravity / Moon / Mars / return
 in-app feature: Vitamin D supplement (taken / not taken)
 
