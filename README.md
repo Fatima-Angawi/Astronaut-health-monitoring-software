@@ -12,7 +12,7 @@ the process of monitoring, warning and protecting astronaunt health during their
 ## Data availability
 We ran 33 systematic queries on NASA OSDR (355 unique studies). 
 No open dataset contained human sleep, PVT, mood, heart rate, blood pressure, or SpO₂.
-The only human spaceflight data (Inspiration4) is molecular and clinical blood data. 
+The only human spaceflight data (Inspiration4) is molecular and clinical blood data. https://osdr.nasa.gov/bio/repo/data/studies/OSD-569
 Therefore crew indicators are simulated from HRP Evidence Report values; environment data (radiation, CO₂, SPE) is real NASA data.
 
 ---
