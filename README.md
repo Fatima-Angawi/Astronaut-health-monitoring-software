@@ -34,6 +34,12 @@ assigned to: Layan
 ## # Task: R18 bone fracture check indicator column for guidance 
 description:
 solid understanding and data input
+
+Projected bone loss = months in flight × loss rate, using the with-ARED rate if exercise is logged and the pre-ARED rate if not (Table 4, p22). That shows the astronaut, with evidence, what missed exercise costs.
+
+(for context) Mission phase: microgravity / Moon / Mars / return
+in-app feature: Vitamin D supplement (taken / not taken)
+
 assigned to: LAYAN 
 
 
