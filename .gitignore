@@ -6,3 +6,4 @@ __pycache__/
 *.pyc
 *.zip
 .env
+validate_seed_*.log

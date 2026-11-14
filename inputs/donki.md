@@ -16,13 +16,15 @@ The `displayName` field contains the energy (`>10 MeV`, `15.8–39.8 MeV`, `>100
 
 > "Proton energies above 30 megaelectron volt (MeV) (fluence >30MeV) require shielding"
 
-Using this field to set the alert level is a team design choice:
+The alert levels are set in `rules.json` (the authority); they are a team design choice:
 
 | Event | Level |
 |---|---|
-| No energy above 30 MeV | 🟡 inform the crew |
-| Energy above 30 MeV | 🟠 review EVA plans + shielding |
-| Energy above 30 MeV during a planned EVA | 🔴 |
+| Any active SPE | 🟡 inform the crew |
+| Highest channel >= 30 MeV, or any SPE with an EVA planned in the next 3 days | 🟠 review EVA plans + shielding |
+| Any SPE on a day with an EVA | 🔴 |
+
+The EVA-based levels follow V058 (greatest concern during EVA).
 
 ## Demo scenario
 The **12 Feb 10:15** GOES event (>100 MeV) is the strongest in the file. Put a planned EVA on that date in `simulator.py`, show the system raising the alert, and recommend moving to a shielded area (V055–V057).

@@ -21,7 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from api.db import connect, utc
 
 router = APIRouter()
-ENERGY = re.compile(r">\s*(\d+(?:\.\d+)?)\s*MeV", re.I)
+ENERGY = re.compile(r">=?\s*(\d+(?:\.\d+)?)\s*MeV", re.I)   # ">10 MeV" and ">=10 MeV"
 ALLOWED_INSTRUMENTS = ("GOES",)   # team design, as in inputs/donki.md: measured GOES channels only, no models
 
 

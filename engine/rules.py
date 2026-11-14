@@ -5,25 +5,34 @@ to daily_features (written by features.py) and writes one alert per rule hit.
 Operators follow the "_ops" block of rules.json exactly:
   <, >, <=, >=, ==     compare the feature with the threshold
   flag                 the feature is a 0/1 flag; fires when >= threshold (1)
-  baseline+2sd         the feature's z vs personal baseline (features.py: <metric>_z) > threshold
+  baseline+2sd         the feature's z vs personal baseline (features.py: <metric>_z) > threshold;
+                       z uses the robust SD with a minimum floor, and the mean as centre for rating scales
   below_baseline_by    window mean of the feature is below the personal baseline median by >= threshold
-  consecutive          this indicator's yellow on `threshold` days in a row
+  consecutive          this indicator's yellow on `threshold` test sessions in a row (a day with no test is skipped
+                       and does not break the count; any of the indicator's yellow rules counts)
   persists             this indicator's yellow for `window_days` days in a row
   and_yellow           this indicator's yellow AND the indicator named in `metric` yellow on the same day
-  before_critical      this indicator's orange on a day with a critical event today or tomorrow (critical_next_24h)
+  before_critical      this indicator's orange with a critical event within `threshold` hours. The data is daily,
+                       so hours are rounded up to whole days: 24 h = an event today or tomorrow
 Composite operators run after the simple ones, and before_critical last, because they build on them.
 
-Writes: alerts rows with source_engine = 'rule' (earlier rule alerts are deleted first, so a rerun is clean).
+Writes: alerts rows with source_engine = 'rule', through alert_store.sync_alerts, so a rerun keeps each alert's
+id, acknowledged and synced_to_ground.
 escalated_to and action are left empty: triage.py and recommendations.py fill them.
 Cabin-wide rules (R03c, R21b) are written per astronaut here; triage.py merges them into one crew alert.
 
 Usage: python engine/rules.py
 """
+import math
 import sqlite3
+import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from alert_store import sync_alerts
 
 DB = Path(__file__).resolve().parents[1] / "data" / "health.db"
 COMPARE = {"<": np.less, ">": np.greater, "<=": np.less_equal, ">=": np.greater_equal, "==": np.equal}
@@ -37,6 +46,16 @@ def run_length(s):
     def one(x):
         g = (~x).cumsum()
         return x.astype(int).groupby(g).cumsum()
+    return s.groupby(level=0, group_keys=False).apply(one)
+
+
+def run_length_sessions(s, tested):
+    """Like run_length, but counts sessions: days without a test are skipped, they do not break the run."""
+    def one(x):
+        t = tested.loc[x.index]
+        y = x[t]
+        r = y.astype(int).groupby((~y).cumsum()).cumsum()
+        return r.reindex(x.index, fill_value=0)
     return s.groupby(level=0, group_keys=False).apply(one)
 
 
@@ -56,6 +75,7 @@ def main():
     hits = {}                      # rule_id -> boolean Series
     level_of = {}                  # (indicator, level) -> boolean Series (any rule of that level)
     detail = {}                    # rule_id -> Series of the value that was compared (for the reason text)
+    tested = {}                    # (indicator, level) -> days on which that level's rules had data (a session)
     skipped = []
 
     def mark(r, s, val=None):
@@ -64,6 +84,8 @@ def main():
         detail[r.rule_id] = val
         key = (r.indicator_id, r.level)
         level_of[key] = level_of.get(key, false) | s
+        if val is not None:
+            tested[key] = tested.get(key, false) | val.notna()
 
     for phase in (SIMPLE, COMPOSITE, LAST):
         for r in rules[rules.op.isin(phase)].itertuples():
@@ -89,12 +111,14 @@ def main():
             elif op == "and_yellow":
                 mark(r, level_of.get((r.indicator_id, "yellow"), false) & level_of.get((m, "yellow"), false))
             elif op == "consecutive":
-                mark(r, run_length(level_of.get((r.indicator_id, "yellow"), false)) >= int(t))
+                key = (r.indicator_id, "yellow")              # sessions in a row: a day with no test is skipped
+                mark(r, run_length_sessions(level_of.get(key, false), tested.get(key, ~false)) >= int(t))
             elif op == "persists":
                 mark(r, run_length(level_of.get((r.indicator_id, "yellow"), false)) >= int(r.window_days))
             elif op == "before_critical":
-                crit = f.get("critical_next_24h", pd.Series(0, index=idx)) == 1
-                mark(r, level_of.get((m, "orange"), false) & crit)
+                ahead = math.ceil((t if t is not None and not pd.isna(t) else 24) / 24)   # hours -> whole days (daily data)
+                to_next = f.get("days_to_next_critical", pd.Series(np.nan, index=idx))
+                mark(r, level_of.get((m, "orange"), false) & (to_next <= ahead))
             else:
                 skipped.append(f"#{r.rule_id} {r.indicator_id}: unknown operator '{op}'")
 
@@ -114,21 +138,20 @@ def main():
             elif r.op == "and_yellow":
                 why = f"{r.indicator_id} yellow and {r.metric} yellow on the same day"
             elif r.op == "consecutive":
-                why = f"{r.indicator_id} yellow {int(r.threshold)} days in a row"
+                why = f"{r.indicator_id} yellow {int(r.threshold)} test sessions in a row"
             elif r.op == "persists":
                 why = f"{r.indicator_id} yellow {int(r.window_days)} days in a row"
             else:
-                why = f"{r.metric} orange within 24 h of a critical event"
+                why = f"{r.metric} orange with a critical event within {r.threshold:g} h (today or the next day)"
             rows.append({"astronaut_id": a, "time": f"{dates.get(d, '')}T00:00:00Z", "indicator_id": r.indicator_id,
                          "level": r.level, "source_engine": "rule", "rule_id": int(r.rule_id),
                          "reason": f"Day {d}: {why}", "value_ids": r.value_id})
 
-    with con:
-        con.execute("DELETE FROM alerts WHERE source_engine = 'rule'")
-        if rows:
-            pd.DataFrame(rows).to_sql("alerts", con, if_exists="append", index=False)
+    for x in rows:
+        x.pop("source_engine")
+    change = sync_alerts(con, "rule", rows)
     out = pd.DataFrame(rows)
-    print(f"rule alerts: {len(out):,}")
+    print(f"rule alerts: {len(out):,} ({change['kept']} kept, {change['new']} new, {change['removed']} removed)")
     if len(out):
         print(out.groupby(["indicator_id", "level"]).size().unstack(fill_value=0).to_string())
     for s in skipped:

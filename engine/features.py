@@ -24,10 +24,13 @@ BASELINE_DAYS = (1, 14)            # TEAM DESIGN: first two in-flight weeks, bef
 MAD_TO_SD = 1.4826                 # robust SD = 1.4826 x MAD (normal-consistent)
 MIN_SD = {                         # TEAM DESIGN: floor so a very steady person is not flagged by tiny changes
     "pvt_lapses": 2.0, "pvt_slowest10_ms": 30.0, "hr_resting": 2.0, "mood": 0.5, "kss": 0.5,
-    "exercise_minutes": 5.0,
+    "exercise_minutes": 5.0, "sleep_h": 0.3, "work_hours": 0.5, "stress": 0.5,
 }
 BASELINE_METRICS = {"pvt_lapses": "R01c", "pvt_slowest10_ms": "R01c", "hr_resting": "R10b",
-                    "mood": "R02e", "kss": "R01d", "exercise_minutes": "R18"}
+                    "mood": "R02e", "kss": "R01d", "exercise_minutes": "R18",
+                    "sleep_h": "R01", "work_hours": "R01f", "stress": "R02e"}
+RATING_SCALES = {"mood", "stress", "kss"}   # TEAM DESIGN: whole-number ratings; their median moves in whole steps,
+                                            # so the baseline centre is the mean (e.g. 4.6, not 5)
 PVT_BAD_WINDOW, PVT_BAD_MIN = 3, 2  # TEAM DESIGN: one noisy PVT day is not a pattern
 SUM_METRICS = {"personal_dose_mSv", "exercise_minutes", "leisure_minutes"}   # several readings a day are added up
 SHORT_SLEEP_H = 6                  # R01 yellow value (V008), reused for the sleep-environment link (TEAM DESIGN)
@@ -42,6 +45,8 @@ BMD_RATES = {                      # %/month, Fracture ER Table 4 p22; hip and f
 }
 DAYS_PER_MONTH = 30.44
 ADHERENCE = 0.75                   # TEAM DESIGN: 7-day mean exercise >= 75 % of own baseline median
+SLEEP_MIN_DAYS = 5                 # TEAM DESIGN: the 7-day sleep mean needs at least 5 of the 7 nights
+MIN_BASELINE_POINTS = 3            # TEAM DESIGN: no baseline from fewer than 3 days
 
 
 def load(con):
@@ -74,12 +79,13 @@ def baselines(w):
         if m not in w:
             continue
         x = w.loc[a, m].loc[lo:hi].dropna()
-        if len(x) < 3:
+        if len(x) < MIN_BASELINE_POINTS:
             continue
-        med = float(x.median())
-        sd = max(MAD_TO_SD * float((x - med).abs().median()), MIN_SD[m])
+        med = float(x.mean()) if m in RATING_SCALES else float(x.median())
+        sd = max(MAD_TO_SD * float((x - x.median()).abs().median()), MIN_SD[m])
         out.append({"astronaut_id": a, "indicator_id": ind, "metric": m, "median": med,
-                    "robust_sd": sd, "n_points": len(x), "computed_from": f"mission_day {lo}-{hi}"})
+                    "robust_sd": sd, "n_points": len(x),
+                    "computed_from": f"mission_day {lo}-{hi}" + (" (mean: rating scale)" if m in RATING_SCALES else "")})
     return pd.DataFrame(out)
 
 
@@ -112,7 +118,7 @@ def main():
 
     # --- R01 / R01f windows
     if "sleep_h" in w:
-        f["sleep_h_7d_mean"] = per_person(lambda a, x: keyed(a, x.sleep_h.rolling(7, min_periods=5).mean()))
+        f["sleep_h_7d_mean"] = per_person(lambda a, x: keyed(a, x.sleep_h.rolling(7, min_periods=SLEEP_MIN_DAYS).mean()))
     if "work_hours" in w:
         f["work_hours_7d_sum"] = per_person(lambda a, x: keyed(a, x.work_hours.rolling(7, min_periods=7).sum()))
         f["work_days_10h_7d"] = per_person(lambda a, x: keyed(a, (x.work_hours >= 10).astype(float)
@@ -139,7 +145,7 @@ def main():
         crit, eva = event_days(a, crit=1), event_days(a, kind="EVA")
         for d in days:
             rows.append({"astronaut_id": a, "mission_day": d,
-                         "critical_next_24h": float(d in crit or d + 1 in crit),     # TEAM DESIGN: event today or tomorrow
+                         "days_to_next_critical": min((c - d for c in crit if c >= d), default=np.nan),   # 0 = today
                          "eva_today": float(d in eva),
                          "eva_planned": float(any(d + k in eva for k in range(1, EVA_PLANNED_AHEAD + 1)))})
     f = f.join(pd.DataFrame(rows).set_index(["astronaut_id", "mission_day"]))
@@ -199,6 +205,9 @@ def main():
             for site in ["hip", "spine", "femoral_neck"]:
                 rate = np.where(adherent, BMD_RATES["ared"][site], BMD_RATES["pre_ared"][site]) / DAYS_PER_MONTH
                 out[f"projected_bmd_pct_{site}"] = 100 + np.cumsum(rate)
+            # gap to the path of a fully adherent astronaut (ARED rate every day): 0 = on the normal path
+            path = 100 + np.cumsum(np.full(len(x), BMD_RATES["ared"]["hip"] / DAYS_PER_MONTH))
+            out["projected_bmd_hip_gap"] = out["projected_bmd_pct_hip"] - path
             df = pd.DataFrame(out, index=x.index)
             df.index = pd.MultiIndex.from_product([[a], df.index], names=["astronaut_id", "mission_day"])
             return df
@@ -207,7 +216,8 @@ def main():
     # --- write
     long = f.reset_index().melt(id_vars=["astronaut_id", "mission_day"], var_name="metric").dropna(subset=["value"])
     with con:
-        long.to_sql("daily_features", con, if_exists="replace", index=False)
+        con.execute("DELETE FROM daily_features")
+        long.to_sql("daily_features", con, if_exists="append", index=False)
         con.execute("DELETE FROM baselines")
         base.to_sql("baselines", con, if_exists="append", index=False)
     print(f"daily_features: {len(long):,} rows, {long.metric.nunique()} metrics, "

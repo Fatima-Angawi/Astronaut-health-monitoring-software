@@ -1,7 +1,7 @@
 """
 Mission simulator – core crew data for 4 astronauts × 180 days.
 
-Writes to OUT (same folder generate_behavior.py and the bone generator use):
+Writes:
   crew.csv              A1–A4 profiles (personal means; preflight BMD is in bone_preflight.csv from generate_bone.py)
   mission_timeline.csv  mission_day, date, replay_date (real date for DONKI/RadLab/EDA), gravity, phase
   mission_events.csv    EVAs, dockings, landing (critical = 1 → R01/R01c red rule)
@@ -31,7 +31,7 @@ P = {
     # sleep (R01): flight study means ~6.0–6.5 h (V002); individual need varies (V006); SD not sourced (V004)
     "sleep_mean": {"mean": 6.4, "sd_between": 0.15}, "sleep_sd_daily": 0.5,
     # work hours (R01f): nominal 6.5 h/day (V022) → normal days just under it
-    "work_weekday": {"mean": 6.2, "sd": 0.5}, "work_weekend": {"mean": 3.0, "sd": 1.0},
+    "work_weekday": {"mean": 6.0, "sd": 0.3}, "work_weekend": {"mean": 3.0, "sd": 1.0},
     # PVT-B 3-min (R01c): team design response to sleep debt
     "pvt": {"debt_free_h": 0.5,            # sleep debt below this has no effect (team design)
             "lapses_base": 2.0, "lapses_per_excess_h": 4.0,
@@ -54,7 +54,7 @@ P = {
 }
 if os.path.exists("sim_params.json"):
     P.update(json.load(open("sim_params.json")))
-rng = np.random.default_rng(P["seed"])
+rng = np.random.default_rng(P["seed"] + int(os.environ.get("SIM_SEED_OFFSET", 0)))   # offset: validate_seeds.py
 CREW, DAYS = P["crew"], P["days"]
 days = np.arange(1, DAYS + 1)
 start, replay = pd.Timestamp(P["start_date"]), pd.Timestamp(P["replay_start"])
@@ -129,7 +129,7 @@ for a in CREW:
 
         # --- work hours (R01f)
         if busy:
-            work = rng.normal(10.3, 0.15)                            # team design values;≥ 10 h → counts as a 10-h day (V024)
+            work = rng.normal(10.5, 0.15)                            # team design values;≥ 10 h → counts as a 10-h day (V024)
         elif a == "A2" and 58 <= d <= 66:
             work = rng.normal(9.5, 0.3)                              # team design: explains A2's short sleep
         else:
@@ -139,7 +139,7 @@ for a in CREW:
 
         # --- sleep (R01)
         sleep = rng.normal(c.sleep_mean_h, P["sleep_sd_daily"])
-        if busy:                                 sleep -= 0.5                # team design
+        if busy:                                 sleep -= 1.0               # team design
         if a == "A2" and 60 <= d <= 66:          sleep = rng.normal(4.8, 0.3)  # team design: short-sleep week
         if a == "A2" and 120 <= d <= 135:        sleep = rng.normal(5.2, 0.3)  # team design: underreporting scenario
         if a == "A1" and d == 100:               sleep = 4.5                 # team design; decoy: one bad night
@@ -189,7 +189,7 @@ for a in CREW:
         add(a, d, "R10b", "hr_resting", round(hr, 1), "bpm")
         add(a, d, "R10b", "bp_systolic", round(sys_bp), "mmHg")
         add(a, d, "R10b", "bp_diastolic", round(dia_bp), "mmHg")
-        add(a, d, "R06",  "symptom_logged", int(symptom is not None), "bool")
+        add(a, d, "R06",  "symptom_logged", int(symptom is not None or medical == 1), "bool")   # a medical event is always logged
         if symptom:
             add(a, d, "R06", f"symptom_{symptom}", 1, "bool")
         add(a, d, "R06",  "headache", int(symptom == "headache"), "bool")
@@ -208,9 +208,14 @@ for w in docking_weeks:
         label(a, "R01f", "S6_docking_week_overload", w.start, w.stop - 1, "red")
 label("A2", "R10b", "S7_hr_rise_3_days", 70, 73, "orange")
 label("A4", "R06",  "S8_headache_5_days", 80, 84, "orange")
+# docking weeks cut sleep by 1 h; whether the 7-day mean drops below 6 h depends on the person's own sleep need,
+# so the label is set only where the simulated 7-day mean really goes below 6 h (same approach as the bone labels)
+sleep7 = (pd.DataFrame(rows).query("metric == 'sleep_h'")
+          .pivot(index="mission_day", columns="astronaut_id", values="value").rolling(7).mean())
 for w in docking_weeks:
     for a in CREW:
-        label(a, "R01", "S11_docking_week_sleep", w.start + 3, w.stop + 2, "yellow")   # busy week, 0.5 h less sleep
+        if (sleep7.loc[w.start + 3:w.stop + 2, a] < 6).any():
+            label(a, "R01", "S11_docking_week_sleep", w.start + 3, w.stop + 2, "yellow")
 label("A4", "R03c", "S9_high_co2_with_headache", 80, 84, "yellow")
 for a in CREW:
     label(a, "R03c", "S12_co2_over_3mmHg_1h", 82, 82, "orange")    # cabin-wide, [V2 6004]

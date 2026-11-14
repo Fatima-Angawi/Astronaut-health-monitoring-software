@@ -32,7 +32,7 @@ PRIOR_CAREER_MSV = {"A1": 120, "A2": 60, "A3": 30, "A4": 470}   # TEAM DESIGN; A
 
 
 def main():
-    rng = np.random.default_rng(SEED)
+    rng = np.random.default_rng(SEED + int(os.environ.get("SIM_SEED_OFFSET", 0)))   # offset: validate_seeds.py
     tl = pd.read_csv(f"{OUT}/mission_timeline.csv")
     with sqlite3.connect(DB) as con:
         d = pd.read_sql("SELECT date, metric, source, value FROM env_daily WHERE complete = 1 AND source IN "

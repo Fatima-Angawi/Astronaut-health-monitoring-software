@@ -2,12 +2,12 @@
   "_about": "Structured alert rules for the MVP indicators. Thresholds and level mapping are taken from the knowledge base (pipeline columns). value_id must exist in the Values sheet, or be null with a note when the source is not in the sheet yet. 'enabled': false = rule waiting for a source.",
   "_ops": {
     "<, >, <=, >=, ==": "compare metric with threshold",
-    "baseline+2sd": "metric above personal baseline + threshold × robust SD (threshold = 2)",
+    "baseline+2sd": "metric above personal baseline + threshold × robust SD (threshold = 2); the SD has a minimum floor and rating scales (mood, stress, KSS) use the baseline mean as centre (features.py, team design)",
     "below_baseline_by": "window mean of metric below personal baseline by at least threshold",
-    "consecutive": "the indicator's yellow rule true on `threshold` sessions in a row",
+    "consecutive": "the indicator's yellow on `threshold` test sessions in a row; a day with no test is skipped; any of the indicator's yellow rules counts",
     "persists": "the indicator's yellow rule true for `window_days` days in a row",
     "and_yellow": "this indicator's yellow AND the indicator named in metric is yellow on the same day",
-    "before_critical": "this indicator's orange within 24 h before a critical task (mission_events.critical = 1)",
+    "before_critical": "this indicator's orange with a critical task within `threshold` hours (mission_events.critical = 1); daily data, so hours are rounded up to whole days: 24 = today or tomorrow",
     "flag": "metric is a 0/1 flag computed by features.py"
   },
   "rules": [
@@ -42,9 +42,9 @@
     {"indicator_id": "R21", "level": "red", "metric": "career_dose_msv", "op": ">", "threshold": 600, "window_days": null, "value_id": "V039", "enabled": true, "note": "Has exceeded: actual career dose (before mission + received so far)"},
     {"indicator_id": "R21b", "level": "yellow", "metric": "spe_active", "op": "flag", "threshold": 1, "window_days": null, "value_id": "V043", "enabled": true},
     {"indicator_id": "R21b", "level": "orange", "metric": "spe_active_eva_planned", "op": "flag", "threshold": 1, "window_days": null, "value_id": "V058", "enabled": true},
-    {"indicator_id": "R21b", "level": "orange", "metric": "spe_channel_min_mev", "op": ">", "threshold": 30, "window_days": null, "value_id": "V042", "enabled": true, "note": "Energy-to-level mapping is team design based on the p12 quote"},
+    {"indicator_id": "R21b", "level": "orange", "metric": "spe_channel_min_mev", "op": ">=", "threshold": 30, "window_days": null, "value_id": "V042", "enabled": true, "note": "Energy-to-level mapping is team design based on the p12 quote"},
     {"indicator_id": "R21b", "level": "red", "metric": "spe_active_eva_in_progress", "op": "flag", "threshold": 1, "window_days": null, "value_id": "V058", "enabled": true, "note": "Team design"},
-    {"indicator_id": "R18", "level": "yellow", "metric": "projected_bmd_pct_hip", "op": "<", "threshold": 97, "window_days": null, "value_id": "V071", "enabled": true, "note": "Team design early warning; decision pending (normal ARED path ends at 97.04%)"},
+    {"indicator_id": "R18", "level": "yellow", "metric": "projected_bmd_hip_gap", "op": "<=", "threshold": -0.5, "window_days": null, "value_id": "V071", "enabled": true, "note": "Team design: projected hip BMD 0.5 points or more behind the path of a fully adherent astronaut"},
     {"indicator_id": "R18", "level": "orange", "metric": "projected_bmd_pct_hip", "op": "<", "threshold": 95, "window_days": null, "value_id": "V069", "enabled": true, "note": "NASA-STD-3001 Vol 1 Rev C [V1 4027] p39"},
     {"indicator_id": "R18", "level": "orange", "metric": "projected_bmd_pct_spine", "op": "<", "threshold": 95, "window_days": null, "value_id": "V069", "enabled": true, "note": "NASA-STD-3001 Vol 1 Rev C [V1 4027] p39"},
     {"indicator_id": "R18", "level": "orange", "metric": "projected_bmd_pct_femoral_neck", "op": "<", "threshold": 90, "window_days": null, "value_id": "V070", "enabled": true, "note": "NASA-STD-3001 Vol 1 Rev C [V1 4027] p39"}

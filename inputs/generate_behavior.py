@@ -46,7 +46,7 @@ DEFAULT = {
 P = json.load(open("behavior_params.json")) if os.path.exists("behavior_params.json") else DEFAULT
 for k, v in DEFAULT.items():
     P.setdefault(k, v)
-rng = np.random.default_rng(P["seed"])
+rng = np.random.default_rng(P["seed"] + int(os.environ.get("SIM_SEED_OFFSET", 0)))   # offset: validate_seeds.py
 CREW, DAYS = P["crew"], P["days"]
 days = np.arange(1, DAYS + 1)
 
@@ -136,7 +136,10 @@ for a in CREW:
     ability = C.get("ability_offset", {}).get(a, 0.0)
 
     # decoy days: single bad days outside scenario windows
-    free = [t for t in days if t > 7 and not any(s <= t <= e for s, e in scenario_windows[a])]
+    # a 7-day rule stays true for up to 7 days after its cause ends, so decoys keep that distance from every
+    # scenario and from the two docking weeks (27-30, 107-110), which affect the whole crew (TEAM DESIGN)
+    busy = scenario_windows[a] + [(27, 33), (107, 113)]
+    free = [t for t in days if t > 14 and not any(s <= t <= e + 7 for s, e in busy)]
     decoys = set(rng.choice(free, size=6, replace=False).tolist())
     for t in sorted(decoys):
         label(a, "R02e", "D_single_bad_day", t, t, "none", 1)

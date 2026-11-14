@@ -13,10 +13,10 @@ Usage (API running: uvicorn api.main:app):
 import argparse
 import glob
 import os
-import time
 
 import pandas as pd
-import requests
+
+from _feed import send
 
 READING_TIME = "T07:00:00Z"      # generated rows have a date only: one fixed morning time (team design)
 
@@ -39,19 +39,6 @@ def rows_from(path):
     } for r in df.itertuples(index=False)]
 
 
-def post(url, batch, retries=5):
-    for attempt in range(retries):
-        try:
-            res = requests.post(url, json=batch, timeout=60)
-            res.raise_for_status()
-            return res.json()
-        except requests.RequestException as e:
-            wait = 2 ** attempt
-            print(f"   send failed ({e.__class__.__name__}); retrying in {wait}s")
-            time.sleep(wait)
-    raise SystemExit("API not reachable; nothing lost: run again, duplicates are skipped.")
-
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://localhost:8000/readings")
@@ -65,13 +52,9 @@ def main():
             print(f"skip {path}: truth file"); continue
         rows = rows_from(path)
         print(f"{path}: {len(rows):,} readings")
-        for i in range(0, len(rows), a.batch):
-            r = post(a.url, rows[i:i + a.batch])
-            totals["accepted"] += r["accepted"]
-            totals["duplicates"] += r["duplicates"]
-            totals["rejected"] += len(r["rejected"])
-            for rej in r["rejected"][:3]:
-                print(f"   rejected #{i + rej['index']}: {rej['reason']}")
+        r = send(a.url, rows, batch=a.batch)
+        for k in totals:
+            totals[k] += r.get(k, 0)
     print(f"done: {totals}")
 
 

@@ -190,6 +190,48 @@ CREATE TABLE alerts (
   acknowledged   INTEGER DEFAULT 0,
   synced_to_ground INTEGER DEFAULT 0        -- 0 = queued for the delayed link
 );
+CREATE TABLE daily_features (               -- written by engine/features.py, rebuilt on every run
+  astronaut_id   TEXT NOT NULL,
+  mission_day    INTEGER NOT NULL,
+  metric         TEXT NOT NULL,             -- named as in rules.json: 'sleep_h_7d_mean', 'mood_z', ...
+  value          REAL,
+  PRIMARY KEY (astronaut_id, mission_day, metric)
+);
+
+CREATE TABLE triage_daily (                 -- written by engine/triage.py, rebuilt on every run
+  astronaut_id          TEXT NOT NULL,
+  mission_day           INTEGER NOT NULL,
+  level                 TEXT CHECK (level IN ('none','yellow','orange','red')),   -- acute alerts only
+  escalated_to          TEXT,               -- 'astronaut' / 'CMO' / 'flight_surgeon'
+  standing_level        TEXT CHECK (standing_level IN ('none','yellow','orange','red')),  -- R21, R18
+  standing_escalated_to TEXT,
+  n_alerts              INTEGER,
+  indicators            TEXT,               -- 'R01,R01c'
+  top_reason            TEXT,
+  model_flag            INTEGER DEFAULT 0,  -- 1 if the anomaly model also flagged the day
+  PRIMARY KEY (astronaut_id, mission_day)
+);
+
+CREATE TABLE alert_episodes (               -- written by engine/triage.py, rebuilt on every run
+  astronaut_id     TEXT NOT NULL,           -- 'A1'..'A4', or 'CREW' for cabin-wide alerts
+  indicator_id     TEXT NOT NULL,           -- 'R01', ..., or 'MODEL'
+  level            TEXT CHECK (level IN ('yellow','orange','red')),   -- highest level reached
+  escalated_to     TEXT,
+  start_day        INTEGER NOT NULL,
+  end_day          INTEGER,
+  alert_days       INTEGER,
+  level_days       TEXT,                    -- 'yellow from day 60, orange from day 62'
+  first_reason     TEXT,
+  value_ids        TEXT,
+  is_cabin         INTEGER DEFAULT 0,
+  from_model       INTEGER DEFAULT 0,
+  is_standing      INTEGER DEFAULT 0,
+  acknowledged     INTEGER DEFAULT 0,       -- 1 when all of its alerts are acknowledged
+  title            TEXT,                    -- short headline for the UI, filled by guidance/recommendations.py
+  action           TEXT,                    -- filled by guidance/recommendations.py
+  action_value_ids TEXT,
+  PRIMARY KEY (astronaut_id, indicator_id, start_day)
+);
 
 ------------------------------------------------------------------
 -- 6. TESTING (never read by the engine)

@@ -53,6 +53,7 @@ BASELINE_DAYS = (1, 14)                       # TEAM DESIGN: same baseline windo
 ARED_LOAD = (2.0, 3.0)                        # x body weight on a full session, Fracture ER p22
 DXA_NOISE_PCT = 0.5                           # TEAM DESIGN: post-flight DXA measurement noise (1 SD, %)
 POSTFLIGHT_DAY_AFTER_LANDING = 5              # Fracture ER p15
+YELLOW_GAP = 0.5   # points behind the fully adherent path (V071, TEAM DESIGN)
 
 # Scenarios (TEAM DESIGN)
 A2_LOW_EXERCISE = [(60, 80), (125, 170)]      # A2 exercise drop: busy weeks, then a long decline
@@ -63,7 +64,7 @@ VIT_D_GAP = ("A4", 140, 154)                  # same days as behavior scenario 6
 
 
 def main():
-    rng = np.random.default_rng(SEED)
+    rng = np.random.default_rng(SEED + int(os.environ.get("SIM_SEED_OFFSET", 0)))   # offset: validate_seeds.py
     tl = pd.read_csv(f"{OUT}/mission_timeline.csv")
     ev = pd.read_csv(f"{OUT}/mission_events.csv")
     date_of = dict(zip(tl.mission_day, tl.date))
@@ -121,7 +122,10 @@ def main():
         x = tr[(tr.astronaut_id == a) & (tr.site == s) & (tr.projected_bmd_pct < below)]
         return int(x.mission_day.min()) if len(x) else None
     for a in PREFLIGHT:
-        y = first(a, "total_hip", 97)
+        hip = tr[(tr.astronaut_id == a) & (tr.site == "total_hip")]
+        gap = hip.projected_bmd_pct - (100 + RATES["ared"]["total_hip"] / DAYS_PER_MONTH * (hip.mission_day - days[0] + 1))
+        behind = hip.mission_day[gap <= -YELLOW_GAP]
+        y = int(behind.min()) if len(behind) else None
         o = [d for d in (first(a, s, LIMITS[s]) for s in LIMITS) if d]
         if y:
             labels.append([a, "R18", "B1_exercise_drop_bmd_projection", y, landing, "yellow", 0])
