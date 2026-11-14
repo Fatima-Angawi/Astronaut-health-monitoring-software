@@ -60,6 +60,11 @@ assigned to: Fatima Angawi
 description:
 look for data
 
+notes to keep in mind:
+Every real value keeps its real date and source (replay_date, source).
+The UI shows “NASA EDA · RR-1 · 20 Sep 2014” next to the value.
+In the presentation: “Real ISS environment data from different missions, replayed on one simulated mission timeline.”
+
 assigned to: Ahmed Kamal
 
 
