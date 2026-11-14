@@ -1,0 +1,64 @@
+{
+  "_about": "Structured alert rules for the MVP indicators. Thresholds and level mapping are taken from the knowledge base (pipeline columns). value_id must exist in the Values sheet, or be null with a note when the source is not in the sheet yet. 'enabled': false = rule waiting for a source.",
+  "_ops": {
+    "<, >, <=, >=, ==": "compare metric with threshold",
+    "baseline+2sd": "metric above personal baseline + threshold × robust SD (threshold = 2)",
+    "below_baseline_by": "window mean of metric below personal baseline by at least threshold",
+    "consecutive": "the indicator's yellow rule true on `threshold` sessions in a row",
+    "persists": "the indicator's yellow rule true for `window_days` days in a row",
+    "and_yellow": "this indicator's yellow AND the indicator named in metric is yellow on the same day",
+    "before_critical": "this indicator's orange within 24 h before a critical task (mission_events.critical = 1)",
+    "flag": "metric is a 0/1 flag computed by features.py"
+  },
+  "rules": [
+    {"indicator_id": "R01",  "level": "yellow", "metric": "sleep_h_7d_mean",        "op": "<",  "threshold": 6,   "window_days": 7, "value_id": "V008", "enabled": true},
+    {"indicator_id": "R01",  "level": "orange", "metric": "R01c",                   "op": "and_yellow", "threshold": null, "window_days": null, "value_id": "V009", "enabled": true},
+    {"indicator_id": "R01",  "level": "red",    "metric": "R01",                    "op": "before_critical", "threshold": 24, "window_days": null, "value_id": "V010", "enabled": true},
+
+    {"indicator_id": "R01c", "level": "yellow", "metric": "pvt_lapses",             "op": "baseline+2sd", "threshold": 2, "window_days": null, "value_id": "V016", "enabled": true},
+    {"indicator_id": "R01c", "level": "yellow", "metric": "pvt_slowest10_ms",       "op": "baseline+2sd", "threshold": 2, "window_days": null, "value_id": "V016", "enabled": true},
+    {"indicator_id": "R01c", "level": "orange", "metric": "R01c",                   "op": "consecutive", "threshold": 2, "window_days": null, "value_id": "V017", "enabled": true},
+    {"indicator_id": "R01c", "level": "red",    "metric": "R01c",                   "op": "before_critical", "threshold": 24, "window_days": null, "value_id": "V010", "enabled": true},
+
+    {"indicator_id": "R01d", "level": "yellow", "metric": "kss_pvt_mismatch",       "op": "flag", "threshold": 1, "window_days": null, "value_id": "V021", "enabled": true},
+
+    {"indicator_id": "R01f", "level": "yellow", "metric": "work_hours",             "op": ">",  "threshold": 6.5, "window_days": 1, "value_id": "V022", "enabled": true},
+    {"indicator_id": "R01f", "level": "orange", "metric": "work_hours_7d_sum",      "op": ">",  "threshold": 48,  "window_days": 7, "value_id": "V023", "enabled": true},
+    {"indicator_id": "R01f", "level": "red",    "metric": "work_hours_7d_sum",      "op": ">",  "threshold": 60,  "window_days": 7, "value_id": "V024", "enabled": true},
+    {"indicator_id": "R01f", "level": "red",    "metric": "work_days_10h_7d",       "op": ">",  "threshold": 3,   "window_days": 7, "value_id": "V024", "enabled": true},
+
+    {"indicator_id": "R01g", "level": "yellow", "metric": "env_out_of_range_short_sleep", "op": "flag", "threshold": 1, "window_days": null, "value_id": "V053", "enabled": true},
+
+    {"indicator_id": "R02e", "level": "yellow", "metric": "mood",                   "op": "below_baseline_by", "threshold": 1, "window_days": 3, "value_id": "V027", "enabled": true},
+    {"indicator_id": "R02e", "level": "orange", "metric": "mood",                   "op": "below_baseline_by", "threshold": 1, "window_days": 7, "value_id": "V027", "enabled": true},
+    {"indicator_id": "R02e", "level": "red",    "metric": "support_requested",      "op": "==", "threshold": 1, "window_days": null, "value_id": "V027", "enabled": true},
+
+    {"indicator_id": "R02",  "level": "yellow", "metric": "cognitive_score_z",      "op": "<=", "threshold": -1.5, "window_days": null, "value_id": "V072", "enabled": true, "note": "BMed p34"},
+    {"indicator_id": "R02",  "level": "orange", "metric": "cognitive_score_z",      "op": "<",  "threshold": -2.0, "window_days": null, "value_id": "V074", "enabled": true, "note": "BMed pp33, 39"},
+
+    {"indicator_id": "R10b", "level": "yellow", "metric": "hr_resting",             "op": "baseline+2sd", "threshold": 2, "window_days": null, "value_id": "V033", "enabled": true},
+    {"indicator_id": "R10b", "level": "orange", "metric": "R10b",                   "op": "persists", "threshold": null, "window_days": 3, "value_id": "V033", "enabled": true},
+    {"indicator_id": "R10b", "level": "red",    "metric": "hr_resting",             "op": ">",  "threshold": null, "window_days": null, "value_id": "V032", "enabled": false, "note": "Clinical limit not sourced (V032)"},
+
+    {"indicator_id": "R06",  "level": "yellow", "metric": "symptom_logged",         "op": "flag", "threshold": 1, "window_days": null, "value_id": "V037", "enabled": true},
+    {"indicator_id": "R06",  "level": "orange", "metric": "R06",                    "op": "persists", "threshold": null, "window_days": 4, "value_id": "V037", "enabled": true},
+    {"indicator_id": "R06",  "level": "red",    "metric": "red_flag_symptom",       "op": "flag", "threshold": 1, "window_days": null, "value_id": "V036", "enabled": false, "note": "Red-flag symptom list not sourced (V036)"},
+
+    {"indicator_id": "R06b", "level": "yellow", "metric": "spo2",                   "op": "<",  "threshold": null, "window_days": null, "value_id": "V038", "enabled": false, "note": "No sourced threshold (V038)"},
+
+    {"indicator_id": "R03c", "level": "yellow", "metric": "co2_headache_day",       "op": "flag", "threshold": 1, "window_days": null, "value_id": "V047", "enabled": true},
+    {"indicator_id": "R03c", "level": "orange", "metric": "co2_1h_max_mmhg", "op": ">", "threshold": 3, "window_days": null, "value_id": "V068", "enabled": true, "note": "NASA-STD-3001 Vol 2 Rev F [V2 6004] p51 (V066)"},
+
+    {"indicator_id": "R21",  "level": "red",    "metric": "projected_career_dose_msv", "op": ">", "threshold": 600, "window_days": null, "value_id": "V039", "enabled": true},
+
+    {"indicator_id": "R21b", "level": "yellow", "metric": "spe_active",             "op": "flag", "threshold": 1, "window_days": null, "value_id": "V043", "enabled": true},
+    {"indicator_id": "R21b", "level": "orange", "metric": "spe_active_eva_planned", "op": "flag", "threshold": 1, "window_days": null, "value_id": "V058", "enabled": true},
+    {"indicator_id": "R21b", "level": "orange", "metric": "spe_channel_min_mev",    "op": ">",  "threshold": 30, "window_days": null, "value_id": "V042", "enabled": true, "note": "Energy-to-level mapping is team design based on the p12 quote"},
+    {"indicator_id": "R21b", "level": "red",    "metric": "spe_active_eva_in_progress", "op": "flag", "threshold": 1, "window_days": null, "value_id": "V058", "enabled": true, "note": "Team design"},
+
+    {"indicator_id": "R18",  "level": "yellow", "metric": "projected_bmd_pct_hip",  "op": "<",  "threshold": 97,  "window_days": null, "value_id": "V071", "enabled": true, "note": "Team design early warning; limit 95% = NASA-STD-3001 Rev C [V1 4027] p39, to add to Values sheet"},
+    {"indicator_id": "R18",  "level": "orange", "metric": "projected_bmd_pct_hip",  "op": "<",  "threshold": 95,  "window_days": null, "value_id": "V069", "enabled": true, "note": "NASA-STD-3001 Rev C [V1 4027] p39"},
+    {"indicator_id": "R18",  "level": "orange", "metric": "projected_bmd_pct_spine", "op": "<", "threshold": 95,  "window_days": null, "value_id": "V069", "enabled": true, "note": "NASA-STD-3001 Rev C [V1 4027] p39"},
+    {"indicator_id": "R18",  "level": "orange", "metric": "projected_bmd_pct_femoral_neck", "op": "<", "threshold": 90, "window_days": null, "value_id": "V070", "enabled": true, "note": "NASA-STD-3001 Rev C [V1 4027] p39"}
+  ]
+}
