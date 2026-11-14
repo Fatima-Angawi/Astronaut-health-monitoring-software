@@ -49,6 +49,7 @@ PREFLIGHT = {   # g/cm2 and DXA date: teammate's synthetic values (bone_params.j
 BODY_WEIGHT = {"A1": 85.7, "A2": 78.4, "A3": 82.1, "A4": 71.2}         # kg, teammate's synthetic values
 EX_MEAN, EX_SD = 90, 20                       # min/day, ASSUMPTION (placeholder, see docstring)
 ADHERENCE = 0.75                              # TEAM DESIGN
+BASELINE_DAYS = (1, 14)                       # TEAM DESIGN: same baseline window as engine/features.py
 ARED_LOAD = (2.0, 3.0)                        # x body weight on a full session, Fracture ER p22
 DXA_NOISE_PCT = 0.5                           # TEAM DESIGN: post-flight DXA measurement noise (1 SD, %)
 POSTFLIGHT_DAY_AFTER_LANDING = 5              # Fracture ER p15
@@ -87,7 +88,7 @@ def main():
             ex[d] = max(0, round(rng.normal(m, sd)))
         if a == DECOY[0]:
             ex[DECOY[1]] = 0
-        median = float(np.median(list(ex.values())))
+        median = float(np.median([ex[d] for d in days if BASELINE_DAYS[0] <= d <= BASELINE_DAYS[1]]))   # same baseline as engine/features.py
         pct = {s: 100.0 for s in LIMITS}
         for d in days:
             week = [ex[x] for x in range(max(days[0], d - 6), d + 1)]

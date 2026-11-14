@@ -28,7 +28,7 @@ DB = "data/health.db"
 SEED = 11
 CAREER_LIMIT_MSV = 600                         # V039
 PERSONAL_SD = 0.05                             # TEAM DESIGN
-PRIOR_CAREER_MSV = {"A1": 120, "A2": 60, "A3": 30, "A4": 450}   # TEAM DESIGN; A4 = scenario R1
+PRIOR_CAREER_MSV = {"A1": 120, "A2": 60, "A3": 30, "A4": 470}   # TEAM DESIGN; A4 = scenario R1
 
 
 def main():
@@ -68,11 +68,18 @@ def main():
         s = df[(df.astronaut_id == a) & (df.metric == "personal_dose_mSv")].sort_values("mission_day")
         cum = s.value.cumsum().values
         proj = prior + cum + cum / np.arange(1, days + 1) * (days - np.arange(1, days + 1))
+        actual = prior + cum
         over = np.nonzero(proj > CAREER_LIMIT_MSV)[0]
+        hit = np.nonzero(actual > CAREER_LIMIT_MSV)[0]
+        red_from = int(hit[0]) + 1 if len(hit) else None
         if len(over):
-            labels.append([a, "R21", "R1_projected_career_dose_over_600", int(over[0]) + 1, days, "red", 0])
-        print(f"{a}: mission {cum[-1]:.0f} mSv, career at landing {prior + cum[-1]:.0f} mSv"
-              + (f", projection over 600 from day {over[0] + 1}" if len(over) else ""))
+            labels.append([a, "R21", "R1_career_dose_on_track_over_600", int(over[0]) + 1,
+                           (red_from - 1) if red_from else days, "orange", 0])
+        if red_from:
+            labels.append([a, "R21", "R1_career_dose_over_600", red_from, days, "red", 0])
+        print(f"{a}: mission {cum[-1]:.0f} mSv, career at landing {actual[-1]:.0f} mSv"
+              + (f", orange from day {over[0] + 1}" if len(over) else "")
+              + (f", red from day {red_from}" if red_from else ""))
 
     os.makedirs(OUT, exist_ok=True)
     df.to_csv(f"{OUT}/dose_readings.csv", index=False)

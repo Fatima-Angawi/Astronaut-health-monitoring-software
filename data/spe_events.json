@@ -1,0 +1,92 @@
+[
+  {
+    "onset_time": "2024-01-03T20:05Z",
+    "peak_channel_time": "2024-01-03T20:05Z",
+    "energy_channel": ">10 MeV",
+    "min_energy_mev": 10.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/28464/-1",
+    "value_id": "V063"
+  },
+  {
+    "onset_time": "2024-01-29T06:15Z",
+    "peak_channel_time": "2024-01-29T06:15Z",
+    "energy_channel": ">10 MeV",
+    "min_energy_mev": 10.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/28842/-1",
+    "value_id": "V063"
+  },
+  {
+    "onset_time": "2024-02-09T15:30Z",
+    "peak_channel_time": "2024-02-09T15:30Z",
+    "energy_channel": ">10 MeV",
+    "min_energy_mev": 10.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/29079/-1",
+    "value_id": "V063"
+  },
+  {
+    "onset_time": "2024-02-12T08:05Z",
+    "peak_channel_time": "2024-02-12T10:15Z",
+    "energy_channel": ">100 MeV",
+    "min_energy_mev": 100.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/29158/-1",
+    "value_id": "V063"
+  },
+  {
+    "onset_time": "2024-03-15T20:50Z",
+    "peak_channel_time": "2024-03-15T20:50Z",
+    "energy_channel": ">10 MeV",
+    "min_energy_mev": 10.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/29608/-1",
+    "value_id": "V063"
+  },
+  {
+    "onset_time": "2024-03-23T08:15Z",
+    "peak_channel_time": "2024-03-23T08:15Z",
+    "energy_channel": ">10 MeV",
+    "min_energy_mev": 10.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/29711/-1",
+    "value_id": "V063"
+  },
+  {
+    "onset_time": "2024-05-10T13:35Z",
+    "peak_channel_time": "2024-05-10T13:35Z",
+    "energy_channel": ">10 MeV",
+    "min_energy_mev": 10.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30677/-1",
+    "value_id": "V063"
+  },
+  {
+    "onset_time": "2024-05-11T02:10Z",
+    "peak_channel_time": "2024-05-11T02:10Z",
+    "energy_channel": ">100 MeV",
+    "min_energy_mev": 100.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30714/-1",
+    "value_id": "V063"
+  },
+  {
+    "onset_time": "2024-05-13T14:00Z",
+    "peak_channel_time": "2024-05-13T14:00Z",
+    "energy_channel": ">10 MeV",
+    "min_energy_mev": 10.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30817/-1",
+    "value_id": "V063"
+  },
+  {
+    "onset_time": "2024-06-08T02:25Z",
+    "peak_channel_time": "2024-06-08T02:25Z",
+    "energy_channel": ">100 MeV",
+    "min_energy_mev": 100.0,
+    "instrument": "GOES-P",
+    "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/31338/-1",
+    "value_id": "V063"
+  }
+]

@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pydantic>=2
+requests
+pandas
+numpy
+openpyxl
+pandas
+numpy
+scikit-learn
