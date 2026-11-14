@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const A = "src/assets";
+const A = "/assets";
 
 const icons = {
   logo: `${A}/aa2ec.svg`,
