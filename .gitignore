@@ -1,6 +1,5 @@
 data/health.db
 data/health.db-*
-data/raw/
 data/generated/
 __pycache__/
 *.pyc
