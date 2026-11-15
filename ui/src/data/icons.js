@@ -21,9 +21,9 @@ export const icons = {
   settingsNav: `${BASE}/d6efe.svg`,
 
   // Dashboard role icons
-  astronautNav: `${BASE}/c0623.svg`,
-  medicalNav: `${BASE}/e10b7.svg`,
-  surgeonNav: `${BASE}/a1e57.svg`,
+  astronautNav: `${BASE}/Astronaut.svg`,
+  medicalNav: `${BASE}/medical-stethoscope.svg`,
+  surgeonNav: `${BASE}/doctor-profile.svg`,
 
   // Metric icons
   timer: `${BASE}/c1438.svg`,
@@ -40,6 +40,12 @@ export const icons = {
 
   // Hairline divider (1px rule used inside panels)
   divider: `${BASE}/261e4.svg`,
+
+  // Navigation chrome and notification feedback
+  menu: `${BASE}/menu.svg`,
+  close: `${BASE}/close.svg`,
+  check: `${BASE}/check.svg`,
+  info: `${BASE}/info.svg`,
 };
 
 export const trendLegend = [

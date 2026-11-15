@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Icon from "../../components/common/Icon";
 import Panel from "../../components/common/Panel";
 import StatusBadge from "../../components/common/StatusBadge";
 import DataSourceBadge from "../../components/common/DataSourceBadge";
@@ -19,7 +20,7 @@ export default function MissionContext({ items }) {
       <div className="context-grid">
         {items.map((item) => (
           <div className="context-item" key={item.id}>
-            <img src={item.icon} alt="" />
+            <Icon src={item.icon} size={24} tone="info" />
             <strong>{item.title}</strong>
             <b>{item.value}</b>
             {item.alert ? (

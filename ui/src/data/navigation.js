@@ -1,22 +1,42 @@
 import { icons } from "./icons";
 
 /**
- * The three role dashboards, used by the shared sidebar for cross-dashboard navigation.
+ * The three role dashboards, used by the navbar switcher and sidebar role lookup.
  * Keep in sync with the routes declared in src/App.jsx.
  */
 export const dashboardRoutes = [
-  { id: "astronaut", path: "/astronaut", label: "Astronaut", icon: icons.astronautNav },
+  {
+    id: "astronaut",
+    path: "/astronaut",
+    label: "Astronaut Health",
+    subtitle: "Personal Health Overview",
+    icon: icons.astronautNav,
+    iconTone: "nav",
+    brandIcon: icons.logo,
+    brandTone: "nav",
+    brandMark: "logo",
+  },
   {
     id: "medical-officer",
     path: "/medical-officer",
-    label: "Crew Medical Officer",
+    label: "Medical Dashboard",
+    subtitle: "Crew Medical Overview",
     icon: icons.medicalNav,
+    iconTone: "medical",
+    brandIcon: icons.medicalNav,
+    brandTone: "medical",
+    brandMark: "icon",
   },
   {
     id: "flight-surgeon",
     path: "/flight-surgeon",
-    label: "Flight Surgeon",
+    label: "Flight Surgeon Center",
+    subtitle: "Ground Medical Operations",
     icon: icons.surgeonNav,
+    iconTone: "surgeon",
+    brandIcon: icons.surgeonNav,
+    brandTone: "surgeon",
+    brandMark: "icon",
   },
 ];
 
@@ -48,8 +68,14 @@ export const sectionRoutes = {
   ],
 };
 
-export const brands = {
-  astronaut: { icon: icons.logo, logo: true, title: "Astronaut Health", subtitle: "Personal Health Overview" },
-  "medical-officer": { icon: icons.medicalNav, title: "Medical Dashboard", subtitle: "Crew Health Monitoring" },
-  "flight-surgeon": { icon: icons.surgeonNav, title: "Flight Surgeon Center", subtitle: "Ground Medical Operations" },
-};
+export const brands = Object.fromEntries(
+  dashboardRoutes.map((route) => [
+    route.id,
+    {
+      icon: route.brandIcon,
+      logo: route.brandMark === "logo",
+      title: route.label,
+      subtitle: route.subtitle,
+    },
+  ]),
+);

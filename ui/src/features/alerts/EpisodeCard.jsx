@@ -1,31 +1,37 @@
 import { useState } from "react";
+import Icon from "../../components/common/Icon";
 import StatusBadge from "../../components/common/StatusBadge";
 import DataSourceBadge from "../../components/common/DataSourceBadge";
+import { useToast } from "../../components/common/toastContext";
 import WhyPanel from "./WhyPanel";
 import { acknowledgeEpisode } from "../../api";
 import { useAppState } from "../../state/context";
 import { icons } from "../../data/icons";
-import { label, tone, splitIds } from "../../lib/format";
+import { iconTone, label, tone, splitIds } from "../../lib/format";
 
 /**
  * One alert episode as the engine delivers it: its level, title, reason, action, sources
  * (Why? panel) and an acknowledge button. Nothing is evaluated here.
+ *
+ * The warning icon takes the colour of the engine's own level, and the toast reports the
+ * outcome of the acknowledge request.
  */
 export default function EpisodeCard({ episode }) {
   const { refresh } = useAppState();
+  const toast = useToast();
   const [why, setWhy] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(null);
   const ids = splitIds(episode.value_ids, episode.action_value_ids);
 
   const acknowledge = async () => {
+    if (busy) return;
     setBusy(true);
-    setError(null);
     try {
       await acknowledgeEpisode(episode);
+      toast.success(`${episode.title ?? episode.indicator_id} acknowledged.`);
       refresh();
     } catch (e) {
-      setError(e.message);
+      toast.error(`The alert was not acknowledged: ${e.message}`);
     } finally {
       setBusy(false);
     }
@@ -49,7 +55,7 @@ export default function EpisodeCard({ episode }) {
             <strong>Recommended: </strong>
             {episode.action}
           </span>
-          <img src={icons.warning} alt="" />
+          <Icon src={icons.warning} size={24} tone={iconTone(episode.level)} />
         </div>
       )}
       <div className="alert-source">
@@ -64,7 +70,6 @@ export default function EpisodeCard({ episode }) {
           {episode.acknowledged === 1 ? "Acknowledged" : busy ? "Sending…" : "Acknowledge"}
         </button>
       </div>
-      {error && <p className="async-note async-note--error">{error}</p>}
       {why && <WhyPanel ids={ids} />}
     </section>
   );

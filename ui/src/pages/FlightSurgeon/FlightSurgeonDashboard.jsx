@@ -48,7 +48,7 @@ export default function FlightSurgeonDashboard() {
       meta={
         <>
           <MissionControls showAstronaut={false} />
-          <MissionStat label="Crew members" value={`${status.data?.count ?? "-"} Members`} />
+          <MissionStat className="mission-stat--crew" label="Crew members" value={`${status.data?.count ?? "-"} Members`} />
         </>
       }
     >
