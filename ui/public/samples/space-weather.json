@@ -1,0 +1,190 @@
+{
+ "ok": true,
+ "count": 10,
+ "items": [
+  {
+   "event_key": "2023-12-31T21:40:00-FLR-001",
+   "onset_time": "2024-01-03T20:05:00Z",
+   "max_channel": ">10 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/28464/-1",
+   "value_id": "V063",
+   "mission_day": 3,
+   "channels": [
+    {
+     "channel": ">10 MeV",
+     "min_energy_mev": 10.0,
+     "instrument": "GOES-P: SEISS >10 MeV",
+     "time": "2024-01-03T20:05:00Z",
+     "sep_id": "2024-01-03T20:05:00-SEP-001"
+    }
+   ]
+  },
+  {
+   "event_key": "2024-01-29T03:54:00-FLR-001",
+   "onset_time": "2024-01-29T06:15:00Z",
+   "max_channel": ">10 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/28842/-1",
+   "value_id": "V063",
+   "mission_day": 29,
+   "channels": [
+    {
+     "channel": ">10 MeV",
+     "min_energy_mev": 10.0,
+     "instrument": "GOES-P: SEISS >10 MeV",
+     "time": "2024-01-29T06:15:00Z",
+     "sep_id": "2024-01-29T06:15:00-SEP-001"
+    }
+   ]
+  },
+  {
+   "event_key": "2024-02-09T12:53:00-FLR-001",
+   "onset_time": "2024-02-09T15:30:00Z",
+   "max_channel": ">10 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/29079/-1",
+   "value_id": "V063",
+   "mission_day": 40,
+   "channels": [
+    {
+     "channel": ">10 MeV",
+     "min_energy_mev": 10.0,
+     "instrument": "GOES-P: SEISS >10 MeV",
+     "time": "2024-02-09T15:30:00Z",
+     "sep_id": "2024-02-09T15:30:00-SEP-001"
+    }
+   ]
+  },
+  {
+   "event_key": "2024-02-12T06:36:00-CME-001",
+   "onset_time": "2024-02-12T08:05:00Z",
+   "max_channel": ">100 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/29156/-1",
+   "value_id": "V063",
+   "mission_day": 43,
+   "channels": [
+    {
+     "channel": ">10 MeV",
+     "min_energy_mev": 10.0,
+     "instrument": "GOES-P: SEISS >10 MeV",
+     "time": "2024-02-12T08:05:00Z",
+     "sep_id": "2024-02-12T08:05:00-SEP-001"
+    },
+    {
+     "channel": ">100 MeV",
+     "min_energy_mev": 100.0,
+     "instrument": "GOES-P: SEISS >100 MeV",
+     "time": "2024-02-12T10:15:00Z",
+     "sep_id": "2024-02-12T10:15:00-SEP-001"
+    }
+   ]
+  },
+  {
+   "event_key": "2024-03-15T02:10:00-CME-001",
+   "onset_time": "2024-03-15T20:50:00Z",
+   "max_channel": ">10 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/29608/-1",
+   "value_id": "V063",
+   "mission_day": 75,
+   "channels": [
+    {
+     "channel": ">10 MeV",
+     "min_energy_mev": 10.0,
+     "instrument": "GOES-P: SEISS >10 MeV",
+     "time": "2024-03-15T20:50:00Z",
+     "sep_id": "2024-03-15T20:50:00-SEP-001"
+    }
+   ]
+  },
+  {
+   "event_key": "2024-03-23T00:58:00-FLR-001",
+   "onset_time": "2024-03-23T08:15:00Z",
+   "max_channel": ">10 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/29711/-1",
+   "value_id": "V063",
+   "mission_day": 83,
+   "channels": [
+    {
+     "channel": ">10 MeV",
+     "min_energy_mev": 10.0,
+     "instrument": "GOES-P: SEISS >10 MeV",
+     "time": "2024-03-23T08:15:00Z",
+     "sep_id": "2024-03-23T08:15:00-SEP-001"
+    }
+   ]
+  },
+  {
+   "event_key": "2024-05-08T04:20:00-FLR-001",
+   "onset_time": "2024-05-10T13:35:00Z",
+   "max_channel": ">10 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30677/-1",
+   "value_id": "V063",
+   "mission_day": 131,
+   "channels": [
+    {
+     "channel": ">10 MeV",
+     "min_energy_mev": 10.0,
+     "instrument": "GOES-P: SEISS >10 MeV",
+     "time": "2024-05-10T13:35:00Z",
+     "sep_id": "2024-05-10T13:35:00-SEP-001"
+    }
+   ]
+  },
+  {
+   "event_key": "2024-05-11T01:10:00-FLR-001",
+   "onset_time": "2024-05-11T02:10:00Z",
+   "max_channel": ">100 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30714/-1",
+   "value_id": "V063",
+   "mission_day": 132,
+   "channels": [
+    {
+     "channel": ">100 MeV",
+     "min_energy_mev": 100.0,
+     "instrument": "GOES-P: SEISS >100 MeV",
+     "time": "2024-05-11T02:10:00Z",
+     "sep_id": "2024-05-11T02:10:00-SEP-001"
+    }
+   ]
+  },
+  {
+   "event_key": "2024-05-13T08:06:00-FLR-001",
+   "onset_time": "2024-05-13T14:00:00Z",
+   "max_channel": ">10 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/30817/-1",
+   "value_id": "V063",
+   "mission_day": 134,
+   "channels": [
+    {
+     "channel": ">10 MeV",
+     "min_energy_mev": 10.0,
+     "instrument": "GOES-P: SEISS >10 MeV",
+     "time": "2024-05-13T14:00:00Z",
+     "sep_id": "2024-05-13T14:00:00-SEP-001"
+    }
+   ]
+  },
+  {
+   "event_key": "2024-06-08T00:39:00-FLR-001",
+   "onset_time": "2024-06-08T02:25:00Z",
+   "max_channel": ">100 MeV",
+   "source_link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/31338/-1",
+   "value_id": "V063",
+   "mission_day": 160,
+   "channels": [
+    {
+     "channel": ">10 MeV",
+     "min_energy_mev": 10.0,
+     "instrument": "GOES-P: SEISS >10 MeV",
+     "time": "2024-06-08T02:55:00Z",
+     "sep_id": "2024-06-08T02:55:00-SEP-001"
+    },
+    {
+     "channel": ">100 MeV",
+     "min_energy_mev": 100.0,
+     "instrument": "GOES-P: SEISS >100 MeV",
+     "time": "2024-06-08T02:25:00Z",
+     "sep_id": "2024-06-08T02:25:00-SEP-001"
+    }
+   ]
+  }
+ ]
+}
