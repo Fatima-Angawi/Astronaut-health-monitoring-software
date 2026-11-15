@@ -3,6 +3,7 @@ import Panel from "../../components/common/Panel";
 import Divider from "../../components/common/Divider";
 import StatusBadge from "../../components/common/StatusBadge";
 import DataQualityBadge from "../../components/common/DataQualityBadge";
+import { label, tone } from "../../lib/format";
 
 function ChevronDown() {
   return (
@@ -23,10 +24,11 @@ function ChevronDown() {
  * Risk progression for one crew member, with the data window and its completeness shown
  * next to the list so a partial window is never read as a full record.
  */
-export default function CrewRiskTimeline({ crew, selectedCode, onSelect, timeline }) {
+export default function CrewRiskTimeline({ crew, selectedCode, onSelect, episodes, day, sentThrough }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const selected = crew.find((member) => member.code === selectedCode);
-  const { coverage } = timeline;
+  const events = [...episodes].sort((a, b) => a.start_day - b.start_day);
+  const partial = typeof sentThrough === "number" && sentThrough < day;
 
   return (
     <Panel className="timeline-panel" aria-labelledby="timeline-title">
@@ -71,28 +73,31 @@ export default function CrewRiskTimeline({ crew, selectedCode, onSelect, timelin
 
       {selected && (
         <p className="timeline-subject">
-          {selected.name} · {selected.role}
+          {selected.code} · {selected.name}
         </p>
       )}
 
       <Divider />
 
       <div className="timeline-heading">
-        <p className="timeline-subtitle">{timeline.subtitle}</p>
+        <p className="timeline-subtitle">Alert progression · up to day {day}</p>
         <DataQualityBadge
-          status={coverage.status}
-          label={`Coverage ${coverage.label}`}
-          detail={`${coverage.coveredDays}/${coverage.expectedDays} days`}
+          status={partial ? "partial" : "complete"}
+          label={`Data through day ${sentThrough ?? "?"}`}
+          detail={partial ? `received through day ${sentThrough}, shown day ${day}` : undefined}
         />
       </div>
 
       <div className="timeline-list">
-        {timeline.events.map((item) => (
-          <div className="timeline-item" key={item.id}>
-            <StatusBadge tone={item.tone}>{item.day}</StatusBadge>
+        {events.length === 0 && <p className="async-note">No alerts for this astronaut.</p>}
+        {events.map((item) => (
+          <div className="timeline-item" key={`${item.indicator_id}-${item.start_day}-${item.is_cabin}`}>
+            <StatusBadge tone={tone(item.level)}>{item.start_day}</StatusBadge>
             <div>
-              <strong className="timeline-item__title">{item.title}</strong>
-              <span className="timeline-item__detail">{item.detail}</span>
+              <strong className="timeline-item__title">
+                {item.title ?? item.indicator_id} · {label(item.level)}
+              </strong>
+              <span className="timeline-item__detail">{item.first_reason}</span>
             </div>
           </div>
         ))}

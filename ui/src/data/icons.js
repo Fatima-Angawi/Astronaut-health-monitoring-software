@@ -1,10 +1,10 @@
 /**
  * Single source of truth for icon URLs.
  *
- * The Figma export references icons as absolute "/assets/<hash>.svg" URLs, so the
- * files live in `public/assets` (Vite serves `public/` at the site root).
+ * The Figma export references icons as absolute "/img/<hash>.svg" URLs, so the
+ * files live in `public/img` (Vite serves `public/` at the site root).
  */
-const BASE = "/assets";
+const BASE = "/img";
 
 export const icons = {
   logo: `${BASE}/aa2ec.svg`,

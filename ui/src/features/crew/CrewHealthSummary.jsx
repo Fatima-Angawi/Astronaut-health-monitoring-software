@@ -21,7 +21,7 @@ export default function CrewHealthSummary({ members }) {
             </span>
             <StatusBadge tone={member.tone}>{member.status}</StatusBadge>
             <span role="cell" className="crew-row__sleep">
-              {member.sleep7dH.toFixed(1)} h
+              {typeof member.sleep7dH === "number" ? `${member.sleep7dH.toFixed(1)} h` : "-"}
             </span>
           </div>
         ))}

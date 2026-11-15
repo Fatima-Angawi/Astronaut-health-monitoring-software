@@ -20,29 +20,36 @@ export const dashboardRoutes = [
   },
 ];
 
-/** In-page sections for the Astronaut dashboard sidebar. */
-export const astronautSections = [
-  { id: "dashboard", label: "Dashboard", icon: icons.dashboardNav },
-  { id: "sleep", label: "Sleep", icon: icons.sleepNav },
-  { id: "activity", label: "Activity", icon: icons.activityNav },
-  { id: "heart", label: "Heart", icon: icons.heartNav },
-  { id: "settings", label: "Settings", icon: icons.settingsNav },
-];
+/**
+ * Second group of the sidebar: the detail pages of the current screen. Each opens a page with
+ * the full history and the alerts behind one part of the dashboard.
+ */
+export const sectionRoutes = {
+  astronaut: [
+    { id: "overview", path: "/astronaut", label: "Dashboard", icon: icons.dashboardNav, end: true },
+    { id: "sleep", path: "/astronaut/sleep", label: "Sleep and workload", icon: icons.sleepNav },
+    { id: "reaction", path: "/astronaut/reaction", label: "Reaction test", icon: icons.timer },
+    { id: "mood", path: "/astronaut/mood", label: "Mood and sleepiness", icon: icons.brain },
+    { id: "activity", path: "/astronaut/activity", label: "Activity and heart", icon: icons.heartNav },
+    { id: "environment", path: "/astronaut/environment", label: "Radiation and cabin", icon: icons.dose },
+  ],
+  "medical-officer": [
+    { id: "overview", path: "/medical-officer", label: "Dashboard", icon: icons.dashboardNav, end: true },
+    { id: "alerts", path: "/medical-officer/alerts", label: "All alerts", icon: icons.warning },
+    { id: "crew", path: "/medical-officer/crew", label: "Crew member trends", icon: icons.heartNav },
+    { id: "environment", path: "/medical-officer/environment", label: "Radiation and cabin", icon: icons.dose },
+  ],
+  "flight-surgeon": [
+    { id: "overview", path: "/flight-surgeon", label: "Dashboard", icon: icons.dashboardNav, end: true },
+    { id: "alerts", path: "/flight-surgeon/alerts", label: "All alerts", icon: icons.warning },
+    { id: "summary", path: "/flight-surgeon/summary", label: "Crew summary", icon: icons.user },
+    { id: "crew", path: "/flight-surgeon/crew", label: "Crew member trends", icon: icons.heartNav },
+    { id: "environment", path: "/flight-surgeon/environment", label: "Radiation and cabin", icon: icons.dose },
+  ],
+};
 
-/** In-page sections for the Crew Medical Officer dashboard sidebar. */
-export const medicalSections = [
-  { id: "dashboard", label: "Dashboard", icon: icons.dashboardNav },
-  { id: "night", label: "Night mode", icon: icons.sleepNav },
-  { id: "activity", label: "Activity", icon: icons.activityNav },
-  { id: "health", label: "Health", icon: icons.heartNav },
-  { id: "settings", label: "Settings", icon: icons.settingsNav },
-];
-
-/** In-page sections for the Flight Surgeon dashboard sidebar. */
-export const surgeonSections = [
-  { id: "dashboard", label: "Dashboard", icon: icons.dashboardNav },
-  { id: "sleep", label: "Sleep monitoring", icon: icons.sleepNav },
-  { id: "vitals", label: "Vital activity", icon: icons.activityNav },
-  { id: "crew-health", label: "Crew health", icon: icons.heartNav },
-  { id: "settings", label: "Settings", icon: icons.settingsNav },
-];
+export const brands = {
+  astronaut: { icon: icons.logo, logo: true, title: "Astronaut Health", subtitle: "Personal Health Overview" },
+  "medical-officer": { icon: icons.medicalNav, title: "Medical Dashboard", subtitle: "Crew Health Monitoring" },
+  "flight-surgeon": { icon: icons.surgeonNav, title: "Flight Surgeon Center", subtitle: "Ground Medical Operations" },
+};

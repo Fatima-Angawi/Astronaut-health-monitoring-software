@@ -32,6 +32,7 @@ export default function CrewMemberCard({ member, selected = false, onSelect }) {
       </span>
       <span className="crew-card__role">{member.role}</span>
       <StatusBadge tone={member.tone}>{member.status}</StatusBadge>
+      {member.reason && <span className="crew-card__reason">{member.reason}</span>}
     </button>
   );
 }
