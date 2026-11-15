@@ -16,7 +16,7 @@ const WINDOWS = [14, 30, 60, 180];
  * plus the engine alerts that belong to it (filtered by indicator id), with their sources.
  * `trends` are HealthTrend props; `indicators` are the engine indicators shown here.
  */
-export default function TrendsPage({ role, title, intro, trends, indicators = [], withReactionTest = false }) {
+export default function TrendsPage({ role, title, intro, trends, indicators = [], withReactionTest = false, unmapped = false }) {
   const { astronautId, day } = useAppState();
   const [window, setWindow] = useState(30);
   const ready = day > 0;
@@ -46,6 +46,9 @@ export default function TrendsPage({ role, title, intro, trends, indicators = []
             ))}
           </Panel>
 
+          {unmapped && (
+            <p className="async-note">No engine indicator is mapped to this page yet, so no alerts are shown here.</p>
+          )}
           {indicators.length > 0 && (
             <Async state={episodes}>
               {(d) => {

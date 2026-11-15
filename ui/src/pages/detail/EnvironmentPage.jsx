@@ -33,11 +33,22 @@ export default function EnvironmentPage({ role }) {
           </Async>
           <Panel className="trends-panel detail-panel">
             <Async state={metrics}>
-              {(m) =>
-                m.items.map((x) => (
-                  <EnvTrend key={`${x.metric}-${x.source}`} metric={x.metric} source={x.source} unit={x.unit} from={from} to={day} />
-                ))
-              }
+              {(m) => {
+                const eda = m.items.filter((x) => /EDA/i.test(x.source));
+                return (
+                  <>
+                    {m.items.map((x) => (
+                      <EnvTrend key={`${x.metric}-${x.source}`} metric={x.metric} source={x.source} unit={x.unit} from={from} to={day} />
+                    ))}
+                    {eda.length > 0 && (
+                      <p className="pvt-note">
+                        Cabin environment from EDA: mission days {Math.min(...eda.map((x) => x.first_day))}–
+                        {Math.max(...eda.map((x) => x.last_day))}.
+                      </p>
+                    )}
+                  </>
+                );
+              }}
             </Async>
           </Panel>
           <Panel className="actions-card">

@@ -42,6 +42,7 @@ export const sectionRoutes = {
   "flight-surgeon": [
     { id: "overview", path: "/flight-surgeon", label: "Dashboard", icon: icons.dashboardNav, end: true },
     { id: "alerts", path: "/flight-surgeon/alerts", label: "All alerts", icon: icons.warning },
+    { id: "summary", path: "/flight-surgeon/summary", label: "Crew summary", icon: icons.user },
     { id: "crew", path: "/flight-surgeon/crew", label: "Crew member trends", icon: icons.heartNav },
     { id: "environment", path: "/flight-surgeon/environment", label: "Radiation and cabin", icon: icons.dose },
   ],

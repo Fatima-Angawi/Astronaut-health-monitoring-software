@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppStateProvider } from "./state/AppState";
 import TrendsPage from "./pages/detail/TrendsPage";
+import CrewSummaryPage from "./pages/detail/CrewSummaryPage";
 import AlertsPage from "./pages/detail/AlertsPage";
 import EnvironmentPage from "./pages/detail/EnvironmentPage";
 import { PAGES } from "./data/detailPages";
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/medical-officer/crew" element={<TrendsPage role="medical-officer" {...PAGES.crew} />} />
         <Route path="/medical-officer/environment" element={<EnvironmentPage role="medical-officer" />} />
         <Route path="/flight-surgeon/alerts" element={<AlertsPage role="flight-surgeon" />} />
+        <Route path="/flight-surgeon/summary" element={<CrewSummaryPage role="flight-surgeon" />} />
         <Route path="/flight-surgeon/crew" element={<TrendsPage role="flight-surgeon" {...PAGES.crew} />} />
         <Route path="/flight-surgeon/environment" element={<EnvironmentPage role="flight-surgeon" />} />
         <Route path="/medical-officer" element={<MedicalOfficerDashboard />} />
