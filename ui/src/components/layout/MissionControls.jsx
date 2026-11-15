@@ -1,5 +1,4 @@
 import { useAppState } from "../../state/context";
-import StatusBadge from "../common/StatusBadge";
 
 const ASTRONAUTS = ["A1", "A2", "A3", "A4"];
 
@@ -68,12 +67,6 @@ export default function MissionControls({ showAstronaut = true }) {
           </select>
         </div>
       )}
-
-      <div className="mission-data-badge">
-        <StatusBadge tone="neutral" title="The crew data in this demo is generated, not from real astronauts.">
-          Simulated crew data
-        </StatusBadge>
-      </div>
     </div>
   );
 }

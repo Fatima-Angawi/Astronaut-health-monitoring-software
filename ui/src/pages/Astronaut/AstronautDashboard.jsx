@@ -14,7 +14,7 @@ import useApi from "../../hooks/useApi";
 import { getEnvironmentDaily, getEpisodes, getSummary } from "../../api";
 import { useAppState } from "../../state/context";
 import { icons } from "../../data/icons";
-import { clock, fixed, label, roleLabel, tone } from "../../lib/format";
+import { clock, fixed } from "../../lib/format";
 
 const brand = {
   icon: icons.logo,
@@ -56,8 +56,6 @@ export default function AstronautDashboard() {
   );
   const dose = useApi(() => getEnvironmentDaily("absorbed_dose_uGy_day", day, day), [day], ready);
 
-  const status = summary.data?.status;
-
   return (
     <DashboardLayout
       brand={brand}
@@ -65,11 +63,6 @@ export default function AstronautDashboard() {
       meta={
         <>
           <MissionControls />
-          <div className="mission-stat mission-stat--status">
-            <span>{astronautId} status</span>
-            <StatusBadge tone={tone(status?.level)}>{status ? label(status.level) : "…"}</StatusBadge>
-            <small>{status ? roleLabel(status.role) : ""}</small>
-          </div>
         </>
       }
     >

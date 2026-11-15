@@ -143,9 +143,6 @@ export default function Navbar({ brand, meta, navOpen = false, onMenuToggle }) {
           <button className="icon-button" type="button" aria-label="Notifications">
             <Icon src={icons.bell} size={24} tone="nav" />
           </button>
-          <button className="user-button" type="button" aria-label="User profile">
-            <img src={icons.user} alt="" />
-          </button>
         </div>
       </div>
     </header>

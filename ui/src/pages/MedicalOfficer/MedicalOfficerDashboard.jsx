@@ -1,8 +1,6 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import MissionControls from "../../components/layout/MissionControls";
-import MissionStat from "../../components/layout/MissionStat";
 import SectionHeader from "../../components/common/SectionHeader";
-import StatusBadge from "../../components/common/StatusBadge";
 import CrewMemberCard from "../../components/common/CrewMemberCard";
 import Async from "../../components/common/Async";
 import AlertQueue from "../../features/alerts/AlertQueue";
@@ -52,11 +50,6 @@ export default function MedicalOfficerDashboard() {
       meta={
         <>
           <MissionControls />
-          <div className="mission-stat mission-stat--alerts">
-            <span>Open Alerts</span>
-            <StatusBadge tone={all.length ? "red" : "green"}>{String(all.length).padStart(2, "0")}</StatusBadge>
-          </div>
-          <MissionStat className="mission-stat--crew" label="Crew members" value={`${crew.length} Members`} />
         </>
       }
     >
