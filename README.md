@@ -1,124 +1,40 @@
-# Astronaut-health-monitoring-software
+# ORVITALIS — Astronaut Health Monitoring
 
-As stated in the Evidence Report:
+**Live demo:** [https://orvitalis.us](https://orvitalis.us) — the mission replay is parked at day 66; open the astronaut view and click **Why?** on the red alert to see the NASA source and page behind it.
 
-Risk of Inadequate Human-System Integration Architecture:
-"We must understand the types of tasks that astronauts will likely perform autonomously, and
-develop human-system integration standards and guidelines for the needed tools and mitigation
-strategies that ensure success in performing those tasks on an autonomous mission."
-We develop this software to integrate these standards and guidelines to deliver an app that can simplify
-the process of monitoring, warning and protecting astronaunt health during their space missions  
+NASA Space Apps Challenge 2026 · Challenge 05 · Team ORVITALIS, Jeddah, Saudi Arabia
 
-## Data availability
-We ran 33 systematic queries on NASA OSDR (355 unique studies). 
-No open dataset contained human sleep, PVT, mood, heart rate, blood pressure, or SpO₂.
-The only human spaceflight data (Inspiration4) is molecular and clinical blood data. https://osdr.nasa.gov/bio/repo/data/studies/OSD-569
-Therefore crew indicators are simulated from HRP Evidence Report values; environment data (radiation, CO₂, SPE) is real NASA data.
+## What it does
+ORVITALIS turns daily crew and mission data into one alert level per astronaut per day and sends it to the person who must act:
+yellow → astronaut, orange → crew medical officer, red → flight surgeon.
+Every alert shows its reason, the action to take, and the NASA document and page behind its threshold.
 
----
-## # Task: SEP and radiation Data preparation and pipeline
-description: SEP is one of the inputs that needs to be watched for radiation risk warning
-DONKI.py represents the ground-based space weather alert; in a real mission, this would come from mission control.
+## How it works
+1. **Knowledge base** – 76 values extracted from 6 HRP Evidence Reports and NASA-STD-3001 Vol 1 & 2, each with document, page and quote (49 verified, 21 team design, 6 still open).
+2. **Inputs** – API endpoints for crew readings, cabin/radiation telemetry and space weather.
+3. **Engine** – daily features (7-day means, personal baselines) → 34 enabled rules citing a Value ID → Isolation Forest for unusual combinations → triage.
+4. **UI** – React app with a "Why?" panel showing the source.
 
-RadLab gives absorbed dose; converting to effective dose needs NASA’s quality-factor model (Radiation ER p43), so we display it separately
+A live replay sends one mission day per minute; the engine reruns as each day arrives.
 
-Real ISS data (NASA RadLab, DosTel1) during the 12 Feb 2024 SPE: no measurable rise inside the station, consistent with HRP Radiation ER p12. The risk is during EVA, so our alert combines the DONKI SPE onset with the EVA schedule.
+## Data
+- **Real NASA data (replayed):** DONKI solar particle events, RadLab ISS radiation dose (DOSTEL, ALTEA), OSDR RR-1 cabin CO₂.
+- **Simulated crew data:** we ran 33 queries on NASA OSDR (355 studies); no open dataset had human sleep, reaction time (PVT), mood, heart rate, blood pressure or SpO₂. Crew indicators are generated from HRP Evidence Report values.
 
-assigned to: Fatima Angawi
+## Built with
+Python, FastAPI, SQLite, pandas, NumPy, scikit-learn, React, Vite · hosted on Azure with nginx and HTTPS.
+Claude (Anthropic) was used as an AI assistant for code and documentation; all output was reviewed and tested by the team.
 
+## Run it locally
+```bash
+git clone https://github.com/Fatima-Angawi/Astronaut-health-monitoring-software.git
+cd Astronaut-health-monitoring-software
+pip install -r requirements.txt
+cp deploy/env.example deploy/env   # add your NASA_API_KEY
+python run_all.py                  # seed data, run engine, run tests
+uvicorn api.main:app --reload      # API on http://127.0.0.1:8000
+cd ui && npm install && npm run dev
+```
 
-## # Task: Behavioral / Cognitive Changes Id: R02e and R02e in sheet
-description:
-solid understanding and data input
-
-assigned to: Layan 
-
-
-## # Task: R18 bone fracture check indicator column for guidance 
-description:
-solid understanding and data input
-
-Average density loss	1–1.5% per month
-
-Projected bone loss = months in flight × loss rate, using the with-ARED rate if exercise is logged and the pre-ARED rate if not (Table 4, p22). That shows the astronaut, with evidence, what missed exercise costs.
-
-later:
-(for context) Mission phase: microgravity / Moon / Mars / return
-in-app feature: Vitamin D supplement (taken / not taken)
-
-assigned to: LAYAN 
-
-
-## # Task: R10b	Cardiovascular Adaptations
-description:
-
-
-assigned to: Fatima Angawi
-
-
-## # Task: hustle closed environment
-description:
-look for data
-
-notes to keep in mind:
-Every real value keeps its real date and source (replay_date, source).
-The UI shows “NASA EDA · RR-1 · 20 Sep 2014” next to the value.
-In the presentation: “Real ISS environment data from different missions, replayed on one simulated mission timeline.”
-
-assigned to: Ahmed Kamal
-
-
-## # Task: sleep loss indicators 
-description:
-look for data
-
-assigned to: Afnan Alsharif
-
-
-
-
-## # Table of Contents
-
-- [About the Project](#about-the-project)
-- [Features](#features)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [License](#license)
-
----
-
-## # About the Project (Heading 2)
-
-Provide a brief introduction to the project. Explain the motivation behind building it, the technologies used, and what makes it unique.
-
-### # Built With (Heading 3)
-
-
-
----
-
-## # Features (Heading 2)
-
-Highlight the core functionalities and capabilities of your application or model.
-
-
----
-
-## # Getting Started (Heading 2)
-
-
-### # Prerequisites (Heading 3)
-
-List any software, libraries, or API keys needed before installation.
-
-
-### # Installation (Heading 3)
-
-Step-by-step instructions on how to install and set up the project:
-
-1. Clone the repository:
-   ```bash
-  
+## Team
+Fatima Angawi · Ahmed Kamel · Layan Alqurashi · Talal Alomayri · Afnan Alsharif
