@@ -1,0 +1,61 @@
+{
+ "ok": true,
+ "count": 4,
+ "mission_day": 66,
+ "date": "2027-01-19",
+ "cabin": [],
+ "items": [
+  {
+   "astronaut_id": "A1",
+   "role": "CMO",
+   "mission_day": 66,
+   "level": "none",
+   "escalated_to": null,
+   "standing_level": "none",
+   "standing_escalated_to": null,
+   "n_alerts": 0,
+   "indicators": null,
+   "top_reason": null,
+   "model_flag": 0
+  },
+  {
+   "astronaut_id": "A2",
+   "role": "crew",
+   "mission_day": 66,
+   "level": "red",
+   "escalated_to": "flight_surgeon",
+   "standing_level": "none",
+   "standing_escalated_to": null,
+   "n_alerts": 12,
+   "indicators": "MODEL,R01,R01c,R01f,R02e",
+   "top_reason": "Day 66: R01 orange with a critical event within 24 h (today or the next day)",
+   "model_flag": 1
+  },
+  {
+   "astronaut_id": "A3",
+   "role": "crew",
+   "mission_day": 66,
+   "level": "none",
+   "escalated_to": null,
+   "standing_level": "none",
+   "standing_escalated_to": null,
+   "n_alerts": 0,
+   "indicators": null,
+   "top_reason": null,
+   "model_flag": 0
+  },
+  {
+   "astronaut_id": "A4",
+   "role": "crew",
+   "mission_day": 66,
+   "level": "none",
+   "escalated_to": null,
+   "standing_level": "orange",
+   "standing_escalated_to": "CMO",
+   "n_alerts": 1,
+   "indicators": "R21",
+   "top_reason": "Day 66: projected_career_dose_msv = 628.1 > 600",
+   "model_flag": 0
+  }
+ ]
+}

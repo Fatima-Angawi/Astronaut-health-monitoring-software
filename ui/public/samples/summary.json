@@ -1,0 +1,73 @@
+{
+ "ok": true,
+ "astronaut_id": "A2",
+ "mission_day": 66,
+ "date": "2027-01-19",
+ "status": {
+  "astronaut_id": "A2",
+  "role": "crew",
+  "mission_day": 66,
+  "level": "red",
+  "escalated_to": "flight_surgeon",
+  "standing_level": "none",
+  "standing_escalated_to": null,
+  "n_alerts": 12,
+  "indicators": "MODEL,R01,R01c,R01f,R02e",
+  "top_reason": "Day 66: R01 orange with a critical event within 24 h (today or the next day)",
+  "model_flag": 1
+ },
+ "cards": {
+  "pvt_lapses": {
+   "metric": "pvt_lapses",
+   "value": 5.0,
+   "mission_day": 66,
+   "date": "2027-01-19",
+   "baseline": {
+    "median": 2.0,
+    "robust_sd": 2.0,
+    "computed_from": "mission_day 1-14"
+   }
+  },
+  "sleep_h_7d_mean": {
+   "metric": "sleep_h_7d_mean",
+   "value": 4.677142857142857,
+   "mission_day": 66,
+   "date": "2027-01-19",
+   "baseline": null
+  },
+  "mood": {
+   "metric": "mood",
+   "value": 4.0,
+   "mission_day": 66,
+   "date": "2027-01-19",
+   "baseline": {
+    "median": 4.642857142857143,
+    "robust_sd": 0.5,
+    "computed_from": "mission_day 1-14 (mean: rating scale)"
+   }
+  },
+  "next_critical_event": {
+   "event_id": 3,
+   "mission_day": 67,
+   "date": "2027-01-20",
+   "astronaut_id": "A2",
+   "type": "EVA",
+   "start_time": "2027-01-20T08:00Z",
+   "end_time": "2027-01-20T15:00Z",
+   "critical": 1,
+   "days_until": 1
+  }
+ },
+ "context": {
+  "spe_active": false,
+  "spe_channel_min_mev": null,
+  "cabin_co2": {
+   "mmhg": 1.86504,
+   "ppm": 2454.0,
+   "is_real": 0
+  },
+  "dose_today_msv": 0.9089,
+  "career_dose_msv": 123.52420000000001,
+  "projected_career_dose_msv": 233.2478181818182
+ }
+}

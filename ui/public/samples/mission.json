@@ -1,0 +1,20 @@
+{
+ "ok": true,
+ "days": 180,
+ "first_day": {
+  "mission_day": 1,
+  "date": "2026-11-15"
+ },
+ "last_day": {
+  "mission_day": 180,
+  "date": "2027-05-13"
+ },
+ "latest_day_with_data": 180,
+ "current_day": 66,
+ "clock_running": false,
+ "seconds_per_day": 60.0,
+ "replay_sent_through": 66,
+ "engine_last_run": null,
+ "engine_last_status": null,
+ "engine_runs": 0
+}
