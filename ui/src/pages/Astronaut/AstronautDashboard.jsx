@@ -130,6 +130,7 @@ function Metrics({ cards }) {
         status="Reaction test"
         tone="neutral"
         title="Reaction Test"
+        to="/astronaut/reaction"
         value={cards.pvt_lapses ? `${fixed(cards.pvt_lapses.value, 0)} lapses` : "no data"}
         detail={cards.pvt_lapses ? `Day ${cards.pvt_lapses.mission_day} · ${base(cards.pvt_lapses)}` : ""}
       />
@@ -138,6 +139,7 @@ function Metrics({ cards }) {
         status="7-day mean"
         tone="neutral"
         title="Sleep"
+        to="/astronaut/sleep"
         value={cards.sleep_h_7d_mean ? `${fixed(cards.sleep_h_7d_mean.value)} h` : "no data"}
         detail="Target 8 h · V005"
       />
@@ -154,6 +156,7 @@ function Metrics({ cards }) {
         status="Self-report"
         tone="neutral"
         title="Mood"
+        to="/astronaut/mood"
         value={cards.mood ? `${fixed(cards.mood.value, 0)} / 5` : "no data"}
         detail={cards.mood ? `Day ${cards.mood.mission_day} · ${base(cards.mood)}` : ""}
       />

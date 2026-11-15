@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Panel from "../../components/common/Panel";
 import StatusBadge from "../../components/common/StatusBadge";
 import DataSourceBadge from "../../components/common/DataSourceBadge";
@@ -12,7 +13,9 @@ import DataSourceBadge from "../../components/common/DataSourceBadge";
 export default function MissionContext({ items }) {
   return (
     <Panel className="context-card" aria-labelledby="mission-context-title">
-      <h2 id="mission-context-title">Mission Context</h2>
+      <h2 id="mission-context-title">
+        Mission Context <Link to="/astronaut/environment" className="more-link">details</Link>
+      </h2>
       <div className="context-grid">
         {items.map((item) => (
           <div className="context-item" key={item.id}>
