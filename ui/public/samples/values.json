@@ -1,0 +1,59 @@
+{
+ "ok": true,
+ "count": 4,
+ "missing": [],
+ "items": [
+  {
+   "value_id": "V008",
+   "indicator_id": "R01",
+   "field": "Yellow trigger",
+   "value": "7-day mean sleep < 6 h",
+   "unit": "h",
+   "value_type": "Team design value",
+   "source_doc": null,
+   "file_name": null,
+   "pdf_page": null,
+   "quote": null,
+   "status": "Design – needs team approval"
+  },
+  {
+   "value_id": "V009",
+   "indicator_id": "R01",
+   "field": "Orange trigger",
+   "value": "Yellow sleep condition AND PVT yellow (V016) at the same time",
+   "unit": null,
+   "value_type": "Team design value",
+   "source_doc": null,
+   "file_name": null,
+   "pdf_page": null,
+   "quote": null,
+   "status": "Design – needs team approval"
+  },
+  {
+   "value_id": "V010",
+   "indicator_id": "R01",
+   "field": "Red trigger",
+   "value": "Orange condition within 24 h before a critical task (EVA, docking, landing)",
+   "unit": null,
+   "value_type": "Team design value",
+   "source_doc": "Sleep ER: Risk of Performance Decrements and Adverse Health Outcomes Resulting from Sleep Loss, Circadian Desynchronization, and Work Overload (HRP, 2016)",
+   "file_name": "Sleep.pdf",
+   "pdf_page": "8",
+   "quote": "Setting limits can be especially important during periods of critical operations.",
+   "status": "Design – needs team approval"
+  },
+  {
+   "value_id": "V011",
+   "indicator_id": "R01",
+   "field": "Actions (from NASA countermeasures)",
+   "value": "Yellow: protect sleep period, nap, pre-sleep lighting setting, caffeine timing. Orange: schedule/workload change. Red: flight surgeon review of schedule or sleep medication",
+   "unit": null,
+   "value_type": "NASA report finding",
+   "source_doc": "Sleep ER: Risk of Performance Decrements and Adverse Health Outcomes Resulting from Sleep Loss, Circadian Desynchronization, and Work Overload (HRP, 2016)",
+   "file_name": "Sleep.pdf",
+   "pdf_page": "24",
+   "quote": "Currently flight surgeons work with other operational personnel to modify flight schedules to allow for adequate sleep and time off on a case-by-case basis",
+   "status": "Design – needs team approval"
+  }
+ ]
+}

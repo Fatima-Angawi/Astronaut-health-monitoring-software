@@ -1,0 +1,22 @@
+{
+ "ok": true,
+ "count": 4,
+ "items": [
+  {
+   "astronaut_id": "A1",
+   "role": "CMO"
+  },
+  {
+   "astronaut_id": "A2",
+   "role": "crew"
+  },
+  {
+   "astronaut_id": "A3",
+   "role": "crew"
+  },
+  {
+   "astronaut_id": "A4",
+   "role": "crew"
+  }
+ ]
+}

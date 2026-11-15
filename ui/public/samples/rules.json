@@ -1,0 +1,39 @@
+{
+ "ok": true,
+ "count": 3,
+ "items": [
+  {
+   "rule_id": 1,
+   "indicator_id": "R01",
+   "level": "yellow",
+   "metric": "sleep_h_7d_mean",
+   "op": "<",
+   "threshold": 6.0,
+   "window_days": 7,
+   "value_id": "V008",
+   "enabled": 1
+  },
+  {
+   "rule_id": 2,
+   "indicator_id": "R01",
+   "level": "orange",
+   "metric": "R01c",
+   "op": "and_yellow",
+   "threshold": null,
+   "window_days": null,
+   "value_id": "V009",
+   "enabled": 1
+  },
+  {
+   "rule_id": 3,
+   "indicator_id": "R01",
+   "level": "red",
+   "metric": "R01",
+   "op": "before_critical",
+   "threshold": 24.0,
+   "window_days": null,
+   "value_id": "V010",
+   "enabled": 1
+  }
+ ]
+}
