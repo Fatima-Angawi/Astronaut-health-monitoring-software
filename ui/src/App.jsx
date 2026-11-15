@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AppStateProvider } from "./state/AppState";
 import AstronautDashboard from "./pages/Astronaut/AstronautDashboard";
 import MedicalOfficerDashboard from "./pages/MedicalOfficer/MedicalOfficerDashboard";
 import FlightSurgeonDashboard from "./pages/FlightSurgeon/FlightSurgeonDashboard";
@@ -11,6 +12,7 @@ import FlightSurgeonDashboard from "./pages/FlightSurgeon/FlightSurgeonDashboard
  */
 export default function App() {
   return (
+    <AppStateProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/astronaut" replace />} />
@@ -20,5 +22,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/astronaut" replace />} />
       </Routes>
     </BrowserRouter>
+    </AppStateProvider>
   );
 }

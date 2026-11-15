@@ -11,20 +11,13 @@ import Sidebar from "./Sidebar";
 export default function DashboardLayout({
   brand,
   meta,
-  sections,
-  activeSection,
-  onSectionChange,
   title,
   children,
 }) {
   return (
     <div className="app-shell">
       <Navbar brand={brand} meta={meta} />
-      <Sidebar
-        sections={sections}
-        activeSection={activeSection}
-        onSectionChange={onSectionChange}
-      />
+      <Sidebar />
       <main className="dashboard-main">
         {title && <h1>{title}</h1>}
         {children}

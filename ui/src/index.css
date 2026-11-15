@@ -1,29 +1,10 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: "Inter:Bold";
-  src: url("https://static.figma.com/font/Inter_1") format("woff2");
-  font-style: normal;
-  font-weight: 700;
+/* Offline-safe: system fonts only, nothing is loaded from the internet. */
+:root {
+  --font-ui: Inter, "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
-@font-face {
-  font-family: "Inter:Medium";
-  src: url("https://static.figma.com/font/Inter_1") format("woff2");
-  font-style: normal;
-  font-weight: 500;
-}
-@font-face {
-  font-family: "Inter:Regular";
-  src: url("https://static.figma.com/font/Inter_1") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-}
-@font-face {
-  font-family: "Inter:Semi Bold";
-  src: url("https://static.figma.com/font/Inter_1") format("woff2");
-  font-style: normal;
-  font-weight: 600;
-}
+
 
 @layer base {
   :root {
@@ -34,7 +15,8 @@
     min-height: 100dvh;
     background: #030a1d;
     color: #fff;
-    font-family: "Inter:Regular", Arial, sans-serif;
+    font-family: var(--font-ui);
+  font-weight: 400;
   }
   button {
     cursor: pointer;
@@ -49,7 +31,7 @@
   min-height: 100dvh;
   background:
     linear-gradient(rgba(0, 8, 32, 0.06), rgba(0, 8, 32, 0.06)),
-    url("/assets/c66e8.png") center top / cover fixed;
+    url("/img/c66e8.png") center top / cover fixed;
   font-size: 14px;
 }
 .topbar {
@@ -92,7 +74,8 @@
   gap: 5px;
 }
 .brand strong {
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
   font-size: 20px;
   line-height: 20px;
 }
@@ -111,7 +94,8 @@
   line-height: 20px;
 }
 .mission-meta strong {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 15px;
 }
 .mission-meta .on-track {
@@ -182,7 +166,8 @@ main {
 }
 h1 {
   margin: 0 0 42px;
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
   font-size: 32px;
   line-height: 1;
 }
@@ -210,17 +195,20 @@ p {
   gap: 20px;
 }
 .alert-heading h2 {
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
   font-size: 20px;
   line-height: 20px;
 }
 .alert-card > p {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   line-height: 20px;
 }
 .recommendation {
   gap: 17px;
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 12px;
   line-height: 20px;
 }
@@ -235,7 +223,8 @@ p {
   white-space: nowrap;
   border-radius: 25px;
   padding: 2px 8px;
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-style: normal;
   line-height: 20px;
 }
@@ -278,16 +267,19 @@ p {
   font-size: 16px;
 }
 .label {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   line-height: 20px;
 }
 .metric-value {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 20px;
   line-height: 20px;
 }
 .micro {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 12px;
   line-height: 20px;
 }
@@ -308,7 +300,8 @@ p {
 .trends-panel > h2,
 .section-heading h2,
 .context-card > h2 {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 18px;
   line-height: 20px;
   font-weight: 500;
@@ -324,12 +317,14 @@ p {
   margin-top: 24px;
 }
 .trend h3 {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 14px;
   line-height: 20px;
 }
 .trend p {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 12px;
   line-height: 20px;
 }
@@ -400,7 +395,8 @@ p {
   display: flex;
   justify-content: center;
   gap: 18px;
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 11px;
 }
 .legend span {
@@ -426,7 +422,8 @@ p {
 }
 .reaction-card h3 {
   margin-top: 5px;
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
   font-size: 14px;
   line-height: 20px;
 }
@@ -453,12 +450,14 @@ p {
   height: 30px;
 }
 .test-display strong {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 20px;
   line-height: 20px;
 }
 .test-display span {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 14px;
   line-height: 20px;
 }
@@ -467,7 +466,8 @@ p {
   border-radius: 25px;
   color: #4abc40;
   background: rgba(74, 188, 64, 0.1);
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 14px;
   line-height: 20px;
   font-style: normal;
@@ -488,7 +488,8 @@ p {
   border-radius: 35px;
   color: white;
   background: #2f324b;
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
 }
 .start-button:disabled {
   cursor: wait;
@@ -516,7 +517,8 @@ p {
   height: 30px;
 }
 .action-title strong {
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
   font-size: 14px;
 }
 .action-title img {
@@ -528,7 +530,8 @@ p {
   line-height: 20px;
 }
 .action-item .pill {
-  font-family: "Inter:Regular";
+  font-family: var(--font-ui);
+  font-weight: 400;
   font-size: 12px;
 }
 .context-card {
@@ -551,12 +554,14 @@ p {
   height: 24px;
 }
 .context-item strong {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 14px;
   line-height: 20px;
 }
 .context-item b {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
@@ -566,7 +571,8 @@ p {
   line-height: 20px;
 }
 .context-item .pill {
-  font-family: "Inter:Regular";
+  font-family: var(--font-ui);
+  font-weight: 400;
   font-size: 12px;
 }
 
@@ -671,7 +677,8 @@ p {
    Shared panel internals
    -------------------------------------------------------------------------- */
 .section-heading__title {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 18px;
   font-weight: 500;
   line-height: 20px;
@@ -683,7 +690,8 @@ p {
   gap: 12px;
 }
 .panel-heading h2 {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 18px;
   font-weight: 500;
   line-height: 20px;
@@ -778,18 +786,21 @@ p {
   height: 30px;
 }
 .crew-card__code {
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
   font-size: 16px;
 }
 .crew-card__name {
   display: block;
   color: var(--text-soft);
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 13px;
 }
 .crew-card__role {
   color: var(--text-muted);
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 13px;
 }
 
@@ -819,7 +830,8 @@ p {
   font-size: 13px;
 }
 .alert-row__label {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
 }
 .task-meta {
   display: flex;
@@ -834,11 +846,13 @@ p {
   gap: 4px;
 }
 .task-time strong {
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
   font-size: 16px;
 }
 .task-time span {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
 }
 .task-time small {
   color: var(--text-muted);
@@ -846,7 +860,8 @@ p {
 .task-warning {
   margin-top: 12px;
   color: rgba(255, 255, 255, 0.85);
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 13px;
   line-height: 20px;
 }
@@ -858,7 +873,8 @@ p {
   border-radius: 35px;
   color: var(--white);
   background: var(--neon-blue);
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
 }
 
 .timeline-selector {
@@ -870,7 +886,8 @@ p {
   margin-top: 16px;
 }
 .timeline-selector__label {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 13px;
 }
 .crew-select {
@@ -885,7 +902,8 @@ p {
   border-radius: 25px;
   color: var(--white);
   background: rgba(47, 50, 75, 0.4);
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
 }
 .crew-select__menu {
   position: absolute;
@@ -916,7 +934,8 @@ p {
   background: rgba(9, 96, 225, 0.28);
 }
 .crew-select__code {
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
 }
 .crew-select__name {
   color: rgba(255, 255, 255, 0.7);
@@ -951,7 +970,8 @@ p {
 }
 .timeline-item__title {
   display: block;
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 14px;
 }
 .timeline-item__detail {
@@ -988,7 +1008,8 @@ p {
 }
 .report-details strong {
   color: rgba(255, 255, 255, 0.75);
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
 }
 .report-quality {
   margin-top: 16px;
@@ -1000,7 +1021,8 @@ p {
   margin-top: 16px;
 }
 .critical-details strong {
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
   font-size: 16px;
 }
 .critical-details p {
@@ -1021,7 +1043,8 @@ p {
   gap: 10px;
 }
 .response-column h3 {
-  font-family: "Inter:Medium";
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 15px;
 }
 .finding-list {
@@ -1045,7 +1068,8 @@ p {
   font-size: 13px;
 }
 .crew-row__code {
-  font-family: "Inter:Semi Bold";
+  font-family: var(--font-ui);
+  font-weight: 600;
 }
 .crew-row__sleep {
   color: var(--text-soft);
@@ -1234,3 +1258,34 @@ p {
     left: 0;
   }
 }
+
+/* ---- live-data additions (kept small; reuse the existing look) ---- */
+.mission-meta small { color: rgba(255,255,255,.5); font-size: 11px; }
+.mission-meta { flex-wrap: wrap; gap: 20px; justify-content: flex-end; }
+.day-select__row { display: flex; align-items: center; gap: 4px; }
+.day-select input, .day-select select, .checkin-form input[type="number"] {
+  background: #0b1430; color: #fff; border: 1px solid #2f324b; border-radius: 8px; padding: 3px 6px; width: 64px; text-align: center;
+}
+.day-select select { width: auto; }
+.day-select button { border: 1px solid #2f324b !important; border-radius: 8px; padding: 2px 8px !important; color: #fff; background: #0b1430; }
+.day-select button:disabled { opacity: .4; cursor: default; }
+.mission-meta .day-select button > img { width: auto; height: auto; }
+.async-note { color: rgba(255,255,255,.7); padding: 8px 0; }
+.async-note--error { color: #ef4040; }
+.alert-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.alert-actions button, .checkin-form button, .why-toggle {
+  border: 1px solid #2f324b; border-radius: 35px; padding: 6px 14px; color: #fff; background: #2f324b;
+}
+.alert-actions button:disabled, .checkin-form button:disabled { opacity: .6; cursor: default; }
+.alert-card + .alert-card { margin-top: 12px; }
+.alert-reason { color: rgba(255,255,255,.75); font-size: 13px; }
+.why-panel { margin-top: 10px; display: grid; gap: 8px; font-size: 13px; }
+.why-panel blockquote { margin: 4px 0 0; padding-left: 10px; border-left: 2px solid #2f324b; color: rgba(255,255,255,.75); }
+.why-panel small { color: rgba(255,255,255,.55); }
+.trend-chart { width: 100%; height: 190px; margin-top: 8px; }
+.checkin-form { display: grid; gap: 10px; }
+.checkin-form label { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; }
+.checkin-form .hint { color: rgba(255,255,255,.55); font-size: 12px; }
+.pvt-note { color: rgba(255,255,255,.6); font-size: 12px; margin-top: 6px; }
+.pvt-result { display: grid; gap: 2px; font-size: 13px; }
+.crew-card__reason { font-size: 12px; color: rgba(255,255,255,.65); }

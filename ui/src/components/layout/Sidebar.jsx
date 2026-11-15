@@ -1,13 +1,8 @@
 import { NavLink } from "react-router-dom";
 import { dashboardRoutes } from "../../data/navigation";
 
-/**
- * Shared icon rail.
- *
- *  - the top group links the three role dashboards and marks the active one;
- *  - the bottom group is the in-page section navigation of the current dashboard.
- */
-export default function Sidebar({ sections = [], activeSection, onSectionChange }) {
+/** Icon rail: one link per screen; the active screen is highlighted. */
+export default function Sidebar() {
   return (
     <nav className="sidebar" aria-label="Main navigation">
       <div className="sidebar__group">
@@ -23,8 +18,6 @@ export default function Sidebar({ sections = [], activeSection, onSectionChange 
           </NavLink>
         ))}
       </div>
-
-      
     </nav>
   );
 }
