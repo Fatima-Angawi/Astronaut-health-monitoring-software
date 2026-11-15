@@ -101,7 +101,9 @@ def main():
     con = sqlite3.connect(DB, timeout=30)
     al = pd.read_sql("SELECT alert_id, indicator_id, level FROM alerts", con)
     if al.empty:
-        raise SystemExit("alerts is empty: run the engine first")
+        print("no alerts yet: nothing to add actions to")
+        con.close()
+        return
     al["indicator_id"] = al.indicator_id.fillna("MODEL")
     missing = set()
     def action(ind, level):

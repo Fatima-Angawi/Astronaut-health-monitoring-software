@@ -31,6 +31,7 @@ FEATURES = ["sleep_h_z", "work_hours_z", "pvt_lapses_z", "pvt_slowest10_ms_z", "
             "hr_resting_z", "mood_z", "stress_z", "exercise_minutes_z"]
 TRAIN_DAYS = (1, 14)      # same baseline period as features.py
 MARGIN = 0.04             # TEAM DESIGN: how far beyond the most unusual baseline day a score must be
+MIN_TRAIN = 20            # TEAM DESIGN: fewest baseline astronaut-days the model is trained on
 MIN_PRESENT = 6           # TEAM DESIGN: skip days with fewer than 6 of the 9 inputs
 TOP_DRIVERS = 3
 SEED = 0
@@ -38,14 +39,21 @@ SEED = 0
 
 def main():
     con = sqlite3.connect(DB, timeout=30)
-    f = pd.read_sql("SELECT * FROM daily_features", con).pivot_table(
-        index=["astronaut_id", "mission_day"], columns="metric", values="value")
+    def wait():
+        sync_alerts(con, "anomaly_model", [])
+        print("model waits for the baseline period (days 1-14)")
+        con.close()
+
+    f = pd.read_sql("SELECT * FROM daily_features", con)
+    if f.empty:
+        return wait()
+    f = f.pivot_table(index=["astronaut_id", "mission_day"], columns="metric", values="value")
     X = f[[c for c in FEATURES if c in f]]
     X = X[X.notna().sum(axis=1) >= MIN_PRESENT].fillna(0)             # a missing input = "at baseline"
     day = X.index.get_level_values("mission_day")
     train = X[(day >= TRAIN_DAYS[0]) & (day <= TRAIN_DAYS[1])]
-    if len(train) < 20:
-        raise SystemExit(f"only {len(train)} baseline days with data: not enough to train")
+    if len(train) < MIN_TRAIN:
+        return wait()
 
     model = IsolationForest(n_estimators=300, random_state=SEED).fit(train)
     score = pd.Series(-model.score_samples(X), index=X.index)          # higher = more unusual

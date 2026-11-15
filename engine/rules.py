@@ -64,8 +64,13 @@ def main():
     rules = pd.read_sql("SELECT * FROM rules WHERE enabled = 1", con)
     if rules.empty:
         raise SystemExit("rules table is empty: run knowledge_base/export_kb.py first")
-    f = pd.read_sql("SELECT * FROM daily_features", con).pivot_table(
-        index=["astronaut_id", "mission_day"], columns="metric", values="value")
+    f = pd.read_sql("SELECT * FROM daily_features", con)
+    if f.empty:
+        change = sync_alerts(con, "rule", [])
+        print(f"no daily_features yet: rule alerts removed ({change['removed']})")
+        con.close()
+        return
+    f = f.pivot_table(index=["astronaut_id", "mission_day"], columns="metric", values="value")
     base = pd.read_sql("SELECT astronaut_id, metric, median FROM baselines", con)
     med = {(r.astronaut_id, r.metric): r.median for r in base.itertuples()}
     dates = dict(pd.read_sql("SELECT mission_day, date FROM mission_timeline", con).values)

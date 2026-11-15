@@ -38,10 +38,9 @@ def load(path):
     return df.dropna(subset=["time"]).drop_duplicates("time").sort_values("time"), pick
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--url", default="http://localhost:8000/environment")
-    a = ap.parse_args()
+def build_rows():
+    """Every EDA reading as a POST /environment row, tagged with its mission day. Returns (rows, last mission day).
+    Also used by inputs/replay.py, so the replay sends exactly what this feed sends."""
     mission_day, rows = 0, []
     for m in MISSIONS:
         if not os.path.exists(m["file"]):
@@ -64,6 +63,14 @@ def main():
                 rows.append({"time": t.strftime("%Y-%m-%dT%H:%M:%SZ"), "metric": metric,
                              "value": float(val), "unit": unit, "sensor": col, "source": src,
                              "is_real": 1, "mission_day": day_of.get(t.date())})
+    return rows, mission_day
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--url", default="http://localhost:8000/environment")
+    a = ap.parse_args()
+    rows, mission_day = build_rows()
     if not rows:
         raise SystemExit("No EDA data to send.")
     print(f"sending {len(rows):,} readings -> {a.url}")

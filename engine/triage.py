@@ -42,7 +42,12 @@ def main():
     al = pd.read_sql("SELECT a.alert_id, a.astronaut_id, a.time, a.indicator_id, a.level, a.source_engine, "
                      "a.reason, a.value_ids, a.acknowledged, r.metric FROM alerts a LEFT JOIN rules r USING (rule_id)", con)
     if al.empty:
-        raise SystemExit("alerts is empty: run engine/rules.py (and engine/anomaly.py) first")
+        with con:                                             # nothing alerting (yet): leave no stale results
+            con.execute("DELETE FROM triage_daily")
+            con.execute("DELETE FROM alert_episodes")
+        print("no alerts yet: triage tables cleared")
+        con.close()
+        return
     day_of = dict(pd.read_sql("SELECT date, mission_day FROM mission_timeline", con).values)
     al["mission_day"] = al.time.str[:10].map(day_of)
     al = al.dropna(subset=["mission_day"])

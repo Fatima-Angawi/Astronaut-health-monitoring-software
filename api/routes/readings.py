@@ -4,6 +4,7 @@ from fastapi import APIRouter, Body
 from pydantic import BaseModel, Field, ConfigDict
 
 from api.db import connect, utc
+from api.engine_runner import schedule_engine
 from api.metrics_catalog import METRICS, as_markdown, check
 
 MAX_BATCH = 5000                                # team design: keeps one request under a few MB
@@ -72,4 +73,6 @@ def add_readings(payload: Union[Reading, List[Reading]] = Body(...)):
                 accepted += 1
             else:
                 duplicates += 1
+    if accepted:
+        schedule_engine("readings")
     return {"ok": True, "accepted": accepted, "duplicates": duplicates, "rejected": rejected}

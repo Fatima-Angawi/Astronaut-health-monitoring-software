@@ -8,14 +8,16 @@ Rules:
   - unknown astronaut / day / id -> HTTP 404 with {"ok": false, "error": "..."}
 The demo is a replay, so the UI chooses a "current mission day" and asks for that day.
 """
+import math
 import sqlite3
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
-from api.db import connect
+from api.db import connect, state_get, state_set
 
 router = APIRouter(tags=["UI views"])
 LEVELS = ["yellow", "orange", "red"]
@@ -51,12 +53,50 @@ def known_day(d):
 
 
 # ------------------------------------------------------------------ mission and crew
-@router.get("/mission", summary="Mission length and the latest day that has results",
+def clock_state():
+    """The mission clock and the engine/replay status, from system_state."""
+    con = connect()
+    try:
+        g = lambda k, d=None: state_get(con, k, d)
+        return {"clock_running": g("clock_running", "0") == "1", "clock_day": int(g("clock_day", "0") or 0),
+                "clock_started_at": g("clock_started_at", ""), "seconds_per_day": float(g("seconds_per_day", "60") or 60),
+                "replay_sent_through": int(g("replay_sent_through", "0") or 0),
+                "engine_last_run": g("engine_last_run"), "engine_last_status": g("engine_last_status"),
+                "engine_runs": int(g("engine_runs", "0") or 0)}
+    finally:
+        con.close()
+
+
+def last_mission_day():
+    return rows("SELECT MAX(mission_day) AS d FROM mission_timeline")[0]["d"] or 0
+
+
+def current_day(st=None, last=None):
+    """Paused: the clock's day. Running: that day plus the whole mission days passed since it was started.
+    Capped at the last mission day. 0 = the mission has not started."""
+    st = st or clock_state()
+    last = last_mission_day() if last is None else last
+    day = st["clock_day"]
+    if st["clock_running"] and st["clock_started_at"]:
+        passed = (datetime.now(timezone.utc) - datetime.fromisoformat(st["clock_started_at"])).total_seconds()
+        day += math.floor(passed / st["seconds_per_day"])
+    return min(day, last)
+
+
+@router.get("/mission", summary="Mission length, the mission clock and the engine status",
             description="""
-The range of mission days, so the UI can offer a "current mission day" (the demo is a replay).
+The range of mission days and where the mission clock is, so the UI knows which day to show.
 
 **Reply:** `days`, `first_day` and `last_day` (each `{"mission_day", "date"}`), and `latest_day_with_data`:
 the highest mission day found in `triage_daily` or `daily_features` (null before the engine has run).
+
+The clock: `current_day` (0 = not started; paused = the clock's day; running = the clock's day plus the days
+passed since it was started, capped at the last day), `clock_running`, `seconds_per_day` (how long one mission
+day lasts), and `replay_sent_through` (the last day whose data the replay has sent). Change it with
+`POST /mission/clock`.
+
+The engine: `engine_last_run` (UTC time), `engine_last_status` ("ok", or the failing step and its last output
+lines), `engine_runs` (how many times it has run since the database was reset).
 
 Example: `GET /mission`
 """)
@@ -66,7 +106,65 @@ def mission():
         return error(404, "mission_timeline is empty: run inputs/load_db.py first")
     latest = rows("SELECT MAX(d) AS d FROM (SELECT MAX(mission_day) AS d FROM triage_daily "
                   "UNION ALL SELECT MAX(mission_day) FROM daily_features)")[0]["d"]
-    return {"ok": True, "days": len(tl), "first_day": tl[0], "last_day": tl[-1], "latest_day_with_data": latest}
+    st = clock_state()
+    return {"ok": True, "days": len(tl), "first_day": tl[0], "last_day": tl[-1], "latest_day_with_data": latest,
+            "current_day": current_day(st, tl[-1]["mission_day"]), "clock_running": st["clock_running"],
+            "seconds_per_day": st["seconds_per_day"], "replay_sent_through": st["replay_sent_through"],
+            "engine_last_run": st["engine_last_run"], "engine_last_status": st["engine_last_status"],
+            "engine_runs": st["engine_runs"]}
+
+
+class ClockAction(BaseModel):
+    model_config = ConfigDict(json_schema_extra={"examples": [{"action": "set_day", "day": 60}]})
+    action: str = Field(description="start, pause, set_day, set_speed or replay_progress.")
+    day: Optional[int] = Field(None, description="For set_day: the day to jump to (0 = before the mission). "
+                                                 "For replay_progress: the last day the replay has sent.")
+    seconds_per_day: Optional[float] = Field(None, description="For set_speed: seconds one mission day lasts (> 0).")
+
+
+@router.post("/mission/clock", summary="Start, pause or move the mission clock",
+             description="""
+Controls the demo's mission clock. One of:
+
+- `{"action": "start"}` : the clock runs from the current day
+- `{"action": "pause"}` : the clock stops at the current day
+- `{"action": "set_day", "day": 60}` : jump to a day (0 to the last day). The replay then sends any days up to it
+  that were not sent yet; jumping back only changes which day is shown
+- `{"action": "set_speed", "seconds_per_day": 10}` : change how long a mission day lasts; the current day is kept
+- `{"action": "replay_progress", "day": 12}` : used by `inputs/replay.py` to record the last day it has sent
+
+**Reply:** the new `GET /mission` body. HTTP 400 for an unknown action or an out-of-range value.
+""")
+def mission_clock(body: ClockAction):
+    last = last_mission_day()
+    if body.action == "set_day" and (body.day is None or not 0 <= body.day <= last):
+        return error(400, f"set_day needs a day between 0 and {last}")
+    if body.action == "replay_progress" and (body.day is None or not 0 <= body.day <= last):
+        return error(400, f"replay_progress needs a day between 0 and {last}")
+    if body.action == "set_speed" and (body.seconds_per_day is None or body.seconds_per_day <= 0):
+        return error(400, "set_speed needs seconds_per_day greater than 0")
+    if body.action not in ("start", "pause", "set_day", "set_speed", "replay_progress"):
+        return error(400, "action must be start, pause, set_day, set_speed or replay_progress")
+    st = clock_state()
+    now = datetime.now(timezone.utc).isoformat()
+    cur = current_day(st, last)
+    con = connect()
+    try:
+        with con:
+            if body.action == "start":
+                if not st["clock_running"]:
+                    state_set(con, clock_running=1, clock_started_at=now)
+            elif body.action == "pause":
+                state_set(con, clock_running=0, clock_day=cur)
+            elif body.action == "set_day":
+                state_set(con, clock_day=body.day, clock_started_at=now)
+            elif body.action == "set_speed":
+                state_set(con, clock_day=cur, clock_started_at=now, seconds_per_day=body.seconds_per_day)
+            else:
+                state_set(con, replay_sent_through=body.day)
+    finally:
+        con.close()
+    return mission()
 
 
 @router.get("/crew", summary="The crew list",
@@ -115,16 +213,20 @@ Everything the main screen needs for one astronaut on one mission day:
   mmHg and in ppm, and whether it is real telemetry); `dose_today_msv`; `career_dose_msv` and
   `projected_career_dose_msv`
 
-A value that does not exist for that day is null. HTTP 404 for an unknown astronaut or day.
+A value that does not exist for that day is null. Without `day` it uses the mission clock's current day
+(day 0 = before the mission: everything empty). HTTP 404 for an unknown astronaut or day.
 
 Example: `GET /summary?astronaut_id=A2&day=66`
 """)
 def summary(astronaut_id: str = Query(..., description="e.g. A2"),
-            day: int = Query(..., description="Mission day, e.g. 66.")):
+            day: Optional[int] = Query(None, description="Mission day, e.g. 66. Default: the mission clock's "
+                                                         "current day.")):
     if not known_astronaut(astronaut_id):
         return error(404, f"unknown astronaut '{astronaut_id}'")
+    if day is None:
+        day = current_day()
     tl = rows("SELECT date FROM mission_timeline WHERE mission_day = ?", (day,))
-    if not tl:
+    if not tl and day != 0:
         return error(404, f"mission day {day} is not in the mission")
     a = astronaut_id
 
@@ -170,7 +272,7 @@ def summary(astronaut_id: str = Query(..., description="e.g. A2"),
                                 COALESCE(t.model_flag, 0) AS model_flag
                          FROM crew c LEFT JOIN triage_daily t ON t.astronaut_id = c.astronaut_id AND t.mission_day = ?
                          WHERE c.astronaut_id = ?""", (day, day, a))[0]
-    return {"ok": True, "astronaut_id": a, "mission_day": day, "date": tl[0]["date"],
+    return {"ok": True, "astronaut_id": a, "mission_day": day, "date": tl[0]["date"] if tl else None,
             "status": status_row, "cards": cards, "context": context}
 
 
@@ -180,16 +282,20 @@ def summary(astronaut_id: str = Query(..., description="e.g. A2"),
 One item per astronaut for that mission day, from `triage_daily`: `level` (today's acute alerts) and
 `standing_level` (slow conditions: career dose, bone projection), who each goes to, `n_alerts`, `indicators`,
 `top_reason` and `model_flag`. An astronaut with nothing that day comes back with `level` "none",
-`standing_level` "none" and `n_alerts` 0.
+`standing_level` "none" and `n_alerts` 0. Without `day` it uses the mission clock's current day (day 0 =
+before the mission: everyone "none").
 
 `cabin` lists the crew-wide episodes (`astronaut_id` = 'CREW', e.g. cabin CO2 or a solar particle event)
 that cover that day.
 
 Example: `GET /status?day=66`
 """)
-def status(day: int = Query(..., description="Mission day, e.g. 66.", examples=[66])):
+def status(day: Optional[int] = Query(None, description="Mission day, e.g. 66. Default: the mission clock's "
+                                                         "current day.", examples=[66])):
+    if day is None:
+        day = current_day()
     tl = rows("SELECT mission_day, date FROM mission_timeline WHERE mission_day = ?", (day,))
-    if not tl:
+    if not tl and day != 0:
         return error(404, f"mission day {day} is not in the mission")
     found = rows("""SELECT c.astronaut_id, c.role, ? AS mission_day,
                            COALESCE(t.level, 'none') AS level, t.escalated_to,
@@ -200,21 +306,23 @@ def status(day: int = Query(..., description="Mission day, e.g. 66.", examples=[
                     ORDER BY c.astronaut_id""", (day, day))
     cabin = rows("SELECT * FROM alert_episodes WHERE astronaut_id = 'CREW' AND start_day <= ? AND end_day >= ? "
                  "ORDER BY start_day DESC", (day, day))
-    return items(found, mission_day=day, date=tl[0]["date"], cabin=cabin)
+    return items(found, mission_day=day, date=tl[0]["date"] if tl else None, cabin=cabin)
 
 
 # ------------------------------------------------------------------ episodes and alerts
 @router.get("/episodes", summary="Alert episodes (consecutive alert days merged into one problem)",
             description="""
-Rows of `alert_episodes`. All parameters are optional and combine. Sorted red first, then orange, yellow;
-within a level, the newest `start_day` first.
+Rows of `alert_episodes` that cover a day (the mission clock's current day unless `day` is given). All
+parameters are optional and combine. Sorted red first, then orange, yellow; within a level, the newest
+`start_day` first.
 
 Example: `GET /episodes?astronaut_id=A2&day=66&min_level=orange`
 """)
 def episodes(
     astronaut_id: Optional[str] = Query(None, description="Only this astronaut's episodes, e.g. A2 (or CREW)."),
     day: Optional[int] = Query(None, description="Only episodes that cover this mission day "
-                                                 "(start_day <= day <= end_day)."),
+                                                 "(start_day <= day <= end_day). Default: the mission clock's "
+                                                 "current day."),
     min_level: Optional[str] = Query(None, description="yellow, orange or red: that level and above."),
     open: int = Query(0, description="1 = only episodes not yet acknowledged."),
     include_cabin: int = Query(1, description="1 (default) = include crew-wide episodes (astronaut_id 'CREW'); "
@@ -228,10 +336,11 @@ def episodes(
         params.append(astronaut_id)
     elif not include_cabin:
         where.append("astronaut_id != 'CREW'")
-    if day is not None:
-        if not known_day(day):
-            return error(404, f"mission day {day} is not in the mission")
-        where.append("start_day <= ? AND end_day >= ?"); params += [day, day]
+    if day is None:
+        day = current_day()
+    if day != 0 and not known_day(day):
+        return error(404, f"mission day {day} is not in the mission")
+    where.append("start_day <= ? AND end_day >= ?"); params += [day, day]
     if min_level is not None:
         if min_level not in LEVELS:
             return error(400, f"min_level must be one of {LEVELS}")

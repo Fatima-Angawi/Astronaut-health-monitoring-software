@@ -60,6 +60,7 @@ def api_up():
 
 def start_api():
     p = subprocess.Popen([PY, "-m", "uvicorn", "api.main:app", "--port", "8000"], cwd=ROOT,
+                         env={**os.environ, "ENGINE_AUTORUN": "0"},          # run_all runs the engine itself
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for _ in range(30):
         if api_up():

@@ -19,6 +19,7 @@ from fastapi import APIRouter, Body
 from pydantic import BaseModel, ConfigDict, Field
 
 from api.db import connect, utc
+from api.engine_runner import schedule_engine
 
 router = APIRouter()
 ENERGY = re.compile(r">=?\s*(\d+(?:\.\d+)?)\s*MeV", re.I)   # ">10 MeV" and ">=10 MeV"
@@ -79,4 +80,6 @@ def add_space_weather(payload: Union[SepRecord, List[SepRecord]] = Body(...)):
                 new_channels += cur.rowcount
             top = con.execute("SELECT MAX(min_energy_mev) FROM spe_channels WHERE event_key = ?", (key,)).fetchone()[0]
             con.execute("UPDATE spe_events SET max_channel = ? WHERE event_key = ?", (f">{top:g} MeV", key))
+    if new_events or new_channels:
+        schedule_engine("space-weather")
     return {"ok": True, "new_events": new_events, "new_channels": new_channels, "rejected": rejected}

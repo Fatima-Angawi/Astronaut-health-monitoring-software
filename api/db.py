@@ -17,6 +17,24 @@ def connect():
     return con
 
 
+STATE_DDL = "CREATE TABLE IF NOT EXISTS system_state (key TEXT PRIMARY KEY, value TEXT)"
+
+
+def state_get(con, key, default=None):
+    """One value from system_state (always text), or `default`."""
+    con.execute(STATE_DDL)
+    r = con.execute("SELECT value FROM system_state WHERE key = ?", (key,)).fetchone()
+    return default if r is None or r[0] is None else r[0]
+
+
+def state_set(con, **values):
+    """Write one or more system_state keys (committed by the caller's `with con:`)."""
+    con.execute(STATE_DDL)
+    con.executemany("INSERT INTO system_state (key, value) VALUES (?, ?) "
+                    "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+                    [(k, str(v)) for k, v in values.items()])
+
+
 def utc(t):
     """ISO time with a zone -> 'YYYY-MM-DDTHH:MM:SSZ'; None if it has no zone or does not parse."""
     try:

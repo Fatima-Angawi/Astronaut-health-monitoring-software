@@ -22,6 +22,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from api.db import connect, utc
 from api.env_catalog import ENV_METRICS, check_env
+from api.engine_runner import schedule_engine
 from api.env_summary import summarize
 from api.metrics_catalog import as_markdown
 
@@ -92,5 +93,7 @@ def add_environment(payload: Union[EnvReading, List[EnvReading]] = Body(...)):
                 nxt = (datetime.fromisoformat(day) + timedelta(days=1)).strftime("%Y-%m-%d")
                 touched[r.source].add(nxt)
         daily_rows = sum(summarize(con, src, days) for src, days in touched.items())
+    if accepted:
+        schedule_engine("environment")
     return {"ok": True, "accepted": accepted, "duplicates": duplicates, "rejected": rejected,
             "daily_rows_updated": daily_rows}

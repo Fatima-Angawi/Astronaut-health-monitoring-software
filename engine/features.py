@@ -91,9 +91,26 @@ def baselines(w):
 
 def main():
     con = sqlite3.connect(DB, timeout=30)
+    if not con.execute("SELECT 1 FROM readings WHERE availability = 'live' LIMIT 1").fetchone():
+        with con:                                             # live mode starts with an empty database
+            con.execute("DELETE FROM daily_features")
+            con.execute("DELETE FROM baselines")
+        print("no readings yet")
+        con.close()
+        return
     tl, r = load(con)
-    days = list(tl.mission_day)
-    last_day = days[-1]
+    last_day = int(tl.mission_day.max())                      # the mission's last day (projections look ahead to it)
+    have = r.mission_day[r.mission_day >= 1]
+    if have.empty:
+        with con:
+            con.execute("DELETE FROM daily_features")
+            con.execute("DELETE FROM baselines")
+        print("no readings yet")
+        con.close()
+        return
+    # only days that have data: forward-filled exercise and the cumulative bone and dose features would otherwise
+    # produce values, and alerts, for days that have not happened yet
+    days = [d for d in tl.mission_day if d <= have.max()]
     w = daily_wide(r, days)
     base = baselines(w)
     b = {(x.astronaut_id, x.metric): x for x in base.itertuples()}

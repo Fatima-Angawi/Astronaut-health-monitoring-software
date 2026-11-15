@@ -6,3 +6,5 @@ __pycache__/
 *.zip
 .env
 validate_seed_*.log
+deploy/env
+data/replay/

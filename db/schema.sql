@@ -248,6 +248,20 @@ CREATE TABLE anomaly_labels (
 );
 
 ------------------------------------------------------------------
+-- 6b. LIVE MODE STATE (written by the API: mission clock, replay progress, engine runs)
+------------------------------------------------------------------
+CREATE TABLE system_state (
+  key            TEXT PRIMARY KEY,          -- clock_running, clock_day, clock_started_at, seconds_per_day,
+                                            -- replay_sent_through, engine_last_run, engine_last_status,
+                                            -- engine_runs, engine_last_reason
+  value          TEXT
+);
+INSERT INTO system_state (key, value) VALUES
+  ('clock_running', '0'), ('clock_day', '0'), ('clock_started_at', ''),
+  ('seconds_per_day', '60'),                -- TEAM DESIGN: one mission day per minute
+  ('replay_sent_through', '0'), ('engine_runs', '0');
+
+------------------------------------------------------------------
 -- 7. PROVENANCE OF RAW FILES
 ------------------------------------------------------------------
 CREATE TABLE raw_files (

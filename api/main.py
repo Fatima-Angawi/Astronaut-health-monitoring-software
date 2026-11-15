@@ -1,5 +1,9 @@
+import os
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from api.routes import readings, environment, space_weather, views
 
 DESCRIPTION = """
@@ -26,10 +30,16 @@ Open an endpoint below and press **Try it out** to send a test request.
 """
 
 app = FastAPI(title="Crew Health Monitor", description=DESCRIPTION, version="0.1")
-app.add_middleware(CORSMiddleware,          # a frontend on this machine (any port) may call the API
+app.add_middleware(CORSMiddleware,          # a frontend on this machine (any port), or on PUBLIC_ORIGIN, may call the API
+                   allow_origins=[os.environ["PUBLIC_ORIGIN"].strip().rstrip("/")] if os.environ.get("PUBLIC_ORIGIN", "").strip() else [],
                    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
                    allow_methods=["*"], allow_headers=["*"])
 app.include_router(readings.router)        # crew:(devices, app, virtual device)
 app.include_router(environment.router)     # cabin + area radiation telemetry
 app.include_router(space_weather.router)   # SPE notices (DONKI format)
 app.include_router(views.router)           # read endpoints for the UI (+ acknowledge)
+
+# The built UI (ui/dist), if there is one, is served at "/". Mounted last so every API route and /docs keep working.
+UI_DIST = Path(__file__).resolve().parents[1] / "ui" / "dist"
+if UI_DIST.is_dir():
+    app.mount("/", StaticFiles(directory=UI_DIST, html=True), name="ui")
