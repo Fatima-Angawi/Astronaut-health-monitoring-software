@@ -65,7 +65,7 @@ export default function AstronautDashboard() {
       meta={
         <>
           <MissionControls />
-          <div>
+          <div className="mission-stat mission-stat--status">
             <span>{astronautId} status</span>
             <StatusBadge tone={tone(status?.level)}>{status ? label(status.level) : "…"}</StatusBadge>
             <small>{status ? roleLabel(status.role) : ""}</small>

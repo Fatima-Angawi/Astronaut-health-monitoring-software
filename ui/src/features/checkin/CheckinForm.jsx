@@ -2,29 +2,37 @@ import { useState } from "react";
 import Panel from "../../components/common/Panel";
 import SectionHeader from "../../components/common/SectionHeader";
 import StatusBadge from "../../components/common/StatusBadge";
-import { sendCheckin } from "../../api";
+import { useToast } from "../../components/common/toastContext";
+import { sendCheckin, settings } from "../../api";
 import { useAppState } from "../../state/context";
 
-/** Daily check-in -> POST /readings (mood, stress, kss, support_requested). */
+/**
+ * Daily check-in -> POST /readings (mood, stress, kss, support_requested).
+ * The toast reports the real outcome; nothing is claimed before the API answered.
+ */
 export default function CheckinForm() {
   const { astronautId, day, refreshSoon } = useAppState();
+  const toast = useToast();
   const [mood, setMood] = useState(4);
   const [stress, setStress] = useState(2);
   const [kss, setKss] = useState(4);
   const [support, setSupport] = useState(false);
-  const [status, setStatus] = useState(null);
   const [busy, setBusy] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
+    if (busy) return;
     setBusy(true);
-    setStatus(null);
     try {
       await sendCheckin(astronautId, { mood, stress, kss, supportRequested: support, missionDay: day });
-      setStatus({ ok: true, text: `Sent for ${astronautId}, day ${day}. Refreshing in about 10 s…` });
+      if (settings.useSamples) {
+        toast.info("Sample data: the check-in was not sent to the API.");
+      } else {
+        toast.success("Daily check-in submitted successfully.");
+      }
       refreshSoon();
     } catch (err) {
-      setStatus({ ok: false, text: err.message });
+      toast.error(`Check-in was not submitted: ${err.message}`);
     } finally {
       setBusy(false);
     }
@@ -54,11 +62,6 @@ export default function CheckinForm() {
           {busy ? "Sending…" : `Send check-in for ${astronautId}`}
         </button>
         <span className="hint">Adds new readings to the mission record; the engine re-runs afterwards.</span>
-        {status && (
-          <p className={status.ok ? "async-note" : "async-note async-note--error"} role="status">
-            {status.text}
-          </p>
-        )}
       </form>
     </Panel>
   );

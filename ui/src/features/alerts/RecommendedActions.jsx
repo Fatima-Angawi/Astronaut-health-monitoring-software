@@ -1,8 +1,9 @@
+import Icon from "../../components/common/Icon";
 import Panel from "../../components/common/Panel";
 import SectionHeader from "../../components/common/SectionHeader";
 import StatusBadge from "../../components/common/StatusBadge";
 import { icons } from "../../data/icons";
-import { label, tone } from "../../lib/format";
+import { iconTone, label, tone } from "../../lib/format";
 
 /**
  * Actions are the engine's own action text for each alert episode (guidance layer), with the
@@ -20,7 +21,7 @@ export default function RecommendedActions({ episodes }) {
         <div className="action-item" key={`${a.indicator_id}-${a.start_day}`}>
           <div className="action-title">
             <strong>{a.title}</strong>
-            <img src={icons.actionWarning} alt="" />
+            <Icon src={icons.actionWarning} size={24} tone={iconTone(a.level)} />
           </div>
           <p>{a.action}</p>
           <StatusBadge tone={tone(a.level)}>{label(a.level)}</StatusBadge>

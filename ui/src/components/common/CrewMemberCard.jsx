@@ -1,3 +1,4 @@
+import Icon from "./Icon";
 import StatusBadge from "./StatusBadge";
 import { icons } from "../../data/icons";
 
@@ -23,7 +24,7 @@ export default function CrewMemberCard({ member, selected = false, onSelect }) {
     >
       <span className="crew-card__identity">
         <span className="avatar">
-          <img src={icons.user} alt="" />
+          <Icon src={icons.user} size={30} tone="nav" />
         </span>
         <span>
           <strong className="crew-card__code">{member.code}</strong>

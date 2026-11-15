@@ -17,7 +17,7 @@ import { LEVEL_RANK, dataThrough, label, roleLabel, tone } from "../../lib/forma
 const brand = {
   icon: icons.medicalNav,
   title: "Medical Dashboard",
-  subtitle: "Crew Health Monitoring",
+  subtitle: "Crew Medical Overview",
 };
 
 const worst = (list) => [...list].sort((a, b) => LEVEL_RANK[b.level] - LEVEL_RANK[a.level])[0];
@@ -52,11 +52,11 @@ export default function MedicalOfficerDashboard() {
       meta={
         <>
           <MissionControls />
-          <div>
+          <div className="mission-stat mission-stat--alerts">
             <span>Open Alerts</span>
             <StatusBadge tone={all.length ? "red" : "green"}>{String(all.length).padStart(2, "0")}</StatusBadge>
           </div>
-          <MissionStat label="Crew members" value={`${crew.length} Members`} />
+          <MissionStat className="mission-stat--crew" label="Crew members" value={`${crew.length} Members`} />
         </>
       }
     >

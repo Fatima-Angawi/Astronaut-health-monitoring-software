@@ -6,6 +6,13 @@ export const LEVEL_RANK = { none: 0, yellow: 1, orange: 2, red: 3 };
 export const tone = (level) => LEVEL_TONE[level] ?? "neutral";
 export const label = (level) => LEVEL_LABEL[level] ?? String(level ?? "-");
 
+/**
+ * Icon tint per severity (see Icon in components/common). The severity itself is never
+ * decided here: it is the level the Rules Engine returned, only its colour is chosen.
+ */
+export const LEVEL_ICON_TONE = { none: "success", yellow: "warning", orange: "critical", red: "critical" };
+export const iconTone = (level) => LEVEL_ICON_TONE[level] ?? "muted";
+
 export const fixed = (v, digits = 1) => (typeof v === "number" ? v.toFixed(digits) : "-");
 
 /** "2027-01-20T08:00Z" -> "08:00" (UTC) */

@@ -20,8 +20,8 @@ export default function MissionControls({ showAstronaut = true }) {
   };
 
   return (
-    <>
-      <div>
+    <div className="mission-controls">
+      <div className="mission-stat mission-stat--day">
         <span>Mission Day</span>
         <strong>
           {missionError && !mission ? "offline" : day === 0 ? "Not started" : `Day ${shown} of ${days}`}
@@ -32,7 +32,7 @@ export default function MissionControls({ showAstronaut = true }) {
         </small>
       </div>
 
-      <div className="day-select">
+      <div className="day-select day-select--day">
         <span>Day</span>
         <div className="day-select__row">
           <button type="button" onClick={() => step(-1)} aria-label="Previous day" disabled={day === null}>
@@ -56,7 +56,7 @@ export default function MissionControls({ showAstronaut = true }) {
       </div>
 
       {showAstronaut && (
-        <div className="day-select">
+        <div className="day-select day-select--astronaut">
           <span>Astronaut</span>
           <select value={astronautId} onChange={(e) => setAstronautId(e.target.value)} aria-label="Astronaut">
             {ASTRONAUTS.map((id) => (
@@ -69,9 +69,11 @@ export default function MissionControls({ showAstronaut = true }) {
         </div>
       )}
 
-      <StatusBadge tone="neutral" title="The crew data in this demo is generated, not from real astronauts.">
-        Simulated crew data
-      </StatusBadge>
-    </>
+      <div className="mission-data-badge">
+        <StatusBadge tone="neutral" title="The crew data in this demo is generated, not from real astronauts.">
+          Simulated crew data
+        </StatusBadge>
+      </div>
+    </div>
   );
 }

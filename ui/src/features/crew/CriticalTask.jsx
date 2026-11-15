@@ -2,6 +2,7 @@ import { useState } from "react";
 import Panel from "../../components/common/Panel";
 import SectionHeader from "../../components/common/SectionHeader";
 import StatusBadge from "../../components/common/StatusBadge";
+import { useToast } from "../../components/common/toastContext";
 import { acknowledgeEpisode } from "../../api";
 import { useAppState } from "../../state/context";
 import { clock, label, tone } from "../../lib/format";
@@ -9,20 +10,22 @@ import { clock, label, tone } from "../../lib/format";
 /**
  * Next critical task (from /events) for the selected crew member. When that astronaut has an
  * alert, the button acknowledges it through the API; it never changes a severity.
+ * The toast reports the outcome of that request.
  */
 export default function CriticalTask({ astronautId, event, episode }) {
   const { refresh } = useAppState();
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(null);
 
   const review = async () => {
+    if (busy) return;
     setBusy(true);
-    setError(null);
     try {
       await acknowledgeEpisode(episode);
+      toast.success(`Alert for ${astronautId} acknowledged.`);
       refresh();
     } catch (e) {
-      setError(e.message);
+      toast.error(`The alert was not acknowledged: ${e.message}`);
     } finally {
       setBusy(false);
     }
@@ -61,7 +64,6 @@ export default function CriticalTask({ astronautId, event, episode }) {
               </button>
             </>
           )}
-          {error && <p className="async-note async-note--error">{error}</p>}
         </>
       )}
     </Panel>

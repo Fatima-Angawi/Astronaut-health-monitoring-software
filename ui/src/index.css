@@ -1,8 +1,34 @@
 @import "tailwindcss";
 
-/* Offline-safe: system fonts only, nothing is loaded from the internet. */
+/* Self-hosted fonts (imported in main.jsx via @fontsource), so the app keeps working offline:
+   nothing is fetched from the internet. Space Grotesk carries the headings and the prominent
+   read-outs, Inter carries everything else.
+   The type and spacing scales below are the single source of truth for the CSS further down. */
 :root {
-  --font-ui: Inter, "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --font-body: Inter, "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --font-ui: var(--font-body); /* older rules still reference --font-ui */
+
+  /* Type scale: size / weight pairs, so the same role always looks the same. */
+  --text-title: 32px;   --weight-title: 600;   /* main page title */
+  --text-section: 18px; --weight-section: 600; /* section heading */
+  --text-card: 16px;    --weight-card: 600;    /* card heading */
+  --text-metric: 28px;  --weight-metric: 600;  /* main metric value / read-out */
+  --text-body: 14px;    --weight-body: 400;    /* body text */
+  --text-meta: 12px;    --weight-meta: 400;    /* secondary text */
+  --text-button: 14px;  --weight-button: 600;
+
+  /* Spacing scale: page padding, section spacing, card gaps and padding. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+
+  --radius-card: 12px;
+  --radius-pill: 25px;
 }
 
 
@@ -29,10 +55,72 @@
 
 .app-shell {
   min-height: 100dvh;
-  background:
-    linear-gradient(rgba(0, 8, 32, 0.06), rgba(0, 8, 32, 0.06)),
-    url("/img/c66e8.png") center top / cover fixed;
   font-size: 14px;
+  isolation: isolate;
+}
+
+/* One shared Earth image moves with document scroll without affecting dashboard rendering. */
+:root {
+  --parallax-start: 200px;
+  --parallax-travel: 160px;
+}
+.parallax {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: #030a1d;
+}
+.parallax__image {
+  position: absolute;
+  inset: 0;
+  background-image: url("/images/earth-horizon.png");
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: cover;
+  transform: translate3d(0, var(--parallax-offset, var(--parallax-start)), 0);
+  will-change: transform;
+}
+.parallax__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(3, 10, 29, 0.2) 0%,
+    rgba(3, 10, 29, 0.08) 38%,
+    rgba(3, 10, 29, 0.02) 68%,
+    rgba(7, 23, 63, 0.12) 100%
+  );
+}
+@media (max-width: 1023px) {
+  :root {
+    --parallax-start: 160px;
+    --parallax-travel: 120px;
+  }
+}
+@media (max-width: 767px) {
+  :root {
+    --parallax-start: 120px;
+    --parallax-travel: 80px;
+  }
+  .parallax__scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(3, 10, 29, 0.28) 0%,
+      rgba(3, 10, 29, 0.12) 45%,
+      rgba(7, 23, 63, 0.18) 100%
+    );
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --parallax-start: 0px;
+    --parallax-travel: 0px;
+  }
+  .parallax__image {
+    will-change: auto;
+  }
 }
 .topbar {
   position: sticky;
@@ -60,17 +148,43 @@
 .brand {
   gap: 14px;
 }
+.dashboard-switcher {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  min-width: 0;
+}
+.brand-trigger {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
 .logo-wrap {
   transform: scaleY(-1);
   height: 54.446px;
+}
+.brand__icon-wrap {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 50px;
+  height: 54.446px;
+}
+.brand__icon-wrap .brand__mark {
+  width: 44px;
+  height: 44px;
 }
 .brand img {
   width: 50px;
   height: 54.446px;
 }
-.brand div:last-child {
+.brand__copy {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   gap: 5px;
 }
 .brand strong {
@@ -78,6 +192,7 @@
   font-weight: 600;
   font-size: 20px;
   line-height: 20px;
+  color: var(--white);
 }
 .brand span,
 .mission-meta span {
@@ -85,13 +200,33 @@
   font-size: 13px;
 }
 .mission-meta {
+  display: flex;
+  align-items: center;
   gap: 32px;
   text-align: center;
 }
-.mission-meta > div {
+.mission-info {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  min-width: 0;
+}
+.mission-controls {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.mission-info > div:not(.mission-controls),
+.mission-controls > div {
   display: flex;
   flex-direction: column;
   line-height: 20px;
+}
+.mission-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
 }
 .mission-meta strong {
   font-family: var(--font-ui);
@@ -756,15 +891,8 @@ p {
   font-family: inherit;
   text-align: left;
 }
-.crew-card--red {
-  border-color: rgba(228, 55, 0, 0.55);
-}
-.crew-card--yellow {
-  border-color: rgba(234, 254, 7, 0.45);
-}
-.crew-card--green {
-  border-color: rgba(74, 188, 64, 0.45);
-}
+
+
 .crew-card.is-selected {
   box-shadow: 0 0 0 1px var(--neon-blue);
 }
@@ -1108,10 +1236,6 @@ p {
   .mission-meta {
     gap: 12px;
   }
-  .mission-meta .mission-stat--optional,
-  .mission-meta button:first-of-type {
-    display: none;
-  }
   .mission-meta span,
   .mission-meta strong {
     font-size: 11px;
@@ -1123,24 +1247,6 @@ p {
   .mission-meta .user-button img {
     width: 32px;
     height: 32px;
-  }
-  .sidebar {
-    inset: auto 12px 12px;
-    transform: none;
-    flex-direction: row;
-    justify-content: space-around;
-    gap: 4px;
-    padding: 7px;
-    border-radius: 22px;
-  }
-  .sidebar button {
-    width: 44px;
-    height: 44px;
-    border-radius: 15px;
-  }
-  .sidebar img {
-    width: 26px;
-    height: 26px;
   }
   main {
     width: 100%;
@@ -1203,32 +1309,6 @@ p {
   }
 }
 @media (max-width: 720px) {
-  .sidebar {
-    justify-content: flex-start;
-    gap: 12px;
-    padding-inline: 12px;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-  .sidebar__group {
-    flex-direction: row;
-    flex-shrink: 0;
-    gap: 4px;
-  }
-  .sidebar__item {
-    width: 44px;
-    height: 44px;
-    border-radius: 15px;
-  }
-  .sidebar__item img {
-    width: 26px;
-    height: 26px;
-  }
-  .sidebar__divider {
-    width: 1px;
-    height: 26px;
-    margin: auto 0;
-  }
   .crew-grid,
   .detail-grid,
   .top-panels,
@@ -1300,3 +1380,937 @@ p {
 .metric-link { display: block; color: inherit; text-decoration: none; }
 .metric-link:hover .metric { border-color: #317dff; }
 .more-link { margin-left: 10px; font-size: 12px; color: #317dff; text-decoration: underline; }
+
+/* ==========================================================================
+   UI/UX improvements: typography, icons, navigation, toasts, spacing,
+   accessibility and responsiveness.
+
+   Applies to all three dashboards. The desktop layouts above are kept: everything
+   here either fills a gap (no hover states, no toast styling) or makes an existing
+   rule responsive without changing how the desktop looks.
+   ========================================================================== */
+
+/* No page may scroll sideways. `clip` (not `hidden`) keeps `position: sticky` working. */
+body {
+  overflow-x: clip;
+}
+
+/* --------------------------------------------------------------------------
+   1. Typography
+
+   Space Grotesk: page titles, headings, prominent read-outs.
+   Inter: body copy, navbar, sidebar, buttons, forms, tables, metric labels,
+   data labels, alert text.
+   -------------------------------------------------------------------------- */
+h1,
+.brand strong,
+.alert-heading h2,
+.trends-panel > h2,
+.section-heading h2,
+.section-heading__title,
+.panel-heading h2,
+.context-card > h2,
+.trend h3,
+.reaction-card h3,
+.response-column h3,
+.action-title strong,
+.crew-card__code,
+.task-time strong,
+.critical-details strong,
+.metric-value,
+.test-display strong {
+  font-family: var(--font-display);
+}
+
+h1 {
+  font-size: var(--text-title);
+  font-weight: var(--weight-title);
+}
+.alert-heading h2,
+.trends-panel > h2,
+.section-heading h2,
+.section-heading__title,
+.panel-heading h2,
+.context-card > h2 {
+  font-size: var(--text-section);
+  font-weight: var(--weight-section);
+}
+.trend h3,
+.reaction-card h3,
+.response-column h3,
+.action-title strong,
+.crew-card__code,
+.task-time strong,
+.critical-details strong {
+  font-weight: var(--weight-card);
+}
+.metric-value,
+.test-display strong {
+  font-size: var(--text-metric);
+  font-weight: var(--weight-metric);
+}
+.alert-card > p,
+.alert-card p,
+.action-item p {
+  font-size: var(--text-body);
+  font-weight: var(--weight-body);
+  line-height: 1.5;
+}
+.start-button,
+.review-button,
+.alert-actions button,
+.checkin-form button,
+.window-select button {
+  font-size: var(--text-button);
+  font-weight: var(--weight-button);
+}
+
+/* Metric values change while the mission replays: tabular digits keep them from jumping. */
+.metric-value,
+.metric .micro,
+.test-display strong,
+.test-display span,
+.pvt-result,
+.context-item b,
+.crew-table,
+.crew-row,
+.report-details p,
+.critical-details,
+.timeline-item__detail,
+.task-time,
+.day-select input,
+.day-select select,
+.mission-meta strong,
+.timeline-subtitle {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   2. Icons
+
+   `Icon` paints the Figma artwork through a CSS mask, so the shape comes from the
+   SVG file and the colour comes from the tone below. That is what makes the icons
+   follow hover, focus and active states instead of being frozen to the colour that
+   was baked into the export.
+
+   nav / info  blue     navigation, information, interactive controls
+   success     green    a completed, healthy state
+   warning     yellow   needs attention
+   critical    red      a critical alert
+   muted       neutral  secondary or inactive
+
+   Severity is never inferred here: tones are passed in from the engine's level.
+   -------------------------------------------------------------------------- */
+.icon {
+  display: inline-block;
+  flex: none;
+  width: var(--icon-size, 24px);
+  height: var(--icon-size, 24px);
+  background-color: currentColor;
+  -webkit-mask: var(--icon-src) center / contain no-repeat;
+  mask: var(--icon-src) center / contain no-repeat;
+  transition: background-color 160ms ease;
+}
+.icon--nav,
+.icon--info {
+  color: var(--blue-yonder);
+}
+.icon--medical {
+  color: #67d7ff;
+}
+.brand .icon--medical {
+  color: #67d7ff;
+}
+.icon--surgeon {
+  color: #7de3a2;
+}
+.brand .icon--surgeon {
+  color: #7de3a2;
+}
+.icon--success {
+  color: #4abc40;
+}
+.icon--warning {
+  color: var(--neon-yellow);
+}
+.icon--critical {
+  color: #ef4040;
+}
+.icon--muted {
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   3. Navbar chrome (shared by all three dashboards)
+   -------------------------------------------------------------------------- */
+.menu-toggle {
+  display: none;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  background: rgba(47, 50, 75, 0.4);
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.menu-toggle:hover {
+  border-color: var(--blue-yonder);
+  background: rgba(46, 150, 245, 0.18);
+}
+.icon-button {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  transition: background-color 160ms ease;
+}
+.icon-button:hover {
+  background: rgba(47, 50, 75, 0.6);
+}
+.brand-trigger {
+  cursor: pointer;
+}
+.brand__chevron {
+  flex: none;
+  color: var(--blue-yonder);
+  transition: transform 160ms ease, color 160ms ease;
+}
+.brand-trigger:hover .brand__chevron {
+  color: var(--white);
+}
+.brand-trigger[aria-expanded="true"] .brand__chevron {
+  transform: rotate(180deg);
+}
+.dashboard-switcher__menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(320px, calc(100vw - 32px));
+  padding: 12px;
+  border: 1px solid rgba(94, 132, 207, 0.38);
+  border-radius: 16px;
+  background: rgba(9, 18, 43, 0.98);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(18px);
+  transform-origin: top left;
+  animation: dashboard-menu-enter 150ms ease-out both;
+}
+.dashboard-switcher__menu[hidden] {
+  display: none;
+}
+.dashboard-switcher__eyebrow {
+  padding: 5px 10px 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.dashboard-switcher__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  color: var(--text-soft);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.dashboard-switcher__option > span:not(.icon) {
+  flex: 1;
+}
+.dashboard-switcher__option:hover,
+.dashboard-switcher__option:focus-visible {
+  border-color: rgba(46, 150, 245, 0.35);
+  background: rgba(46, 150, 245, 0.12);
+  color: var(--white);
+}
+.dashboard-switcher__option.is-active {
+  border-color: rgba(46, 150, 245, 0.42);
+  background: rgba(9, 96, 225, 0.2);
+  color: var(--white);
+}
+.dashboard-switcher__option .dashboard-switcher__check {
+  color: #4abc40;
+}
+@keyframes dashboard-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. Sidebar
+   From 768px up: the fixed icon rail of the Figma design, now with hover, focus
+   and active feedback. Below 768px the same markup is an off-canvas drawer (see
+   the mobile block at the end of this file).
+   -------------------------------------------------------------------------- */
+.sidebar__header,
+.sidebar__label,
+.sidebar-backdrop {
+  display: none;
+}
+.sidebar__item {
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+.sidebar__item:hover {
+  border-color: rgba(46, 150, 245, 0.5);
+  background: rgba(46, 150, 245, 0.14);
+}
+.sidebar__item:hover .icon {
+  color: var(--white);
+}
+.sidebar__item:focus-visible {
+  outline: 2px solid var(--blue-yonder);
+  outline-offset: 3px;
+}
+.sidebar__item.active {
+  border-color: #0840cb;
+  background: rgba(17, 61, 158, 0.2);
+}
+.sidebar__item.active .icon {
+  color: var(--white);
+}
+/* Hovering the current screen must not make it look inactive. */
+.sidebar__item.active:hover {
+  border-color: var(--neon-blue);
+  background: rgba(17, 61, 158, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   5. Toasts (success / error / info feedback)
+   -------------------------------------------------------------------------- */
+.toast-stack {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--hairline);
+  border-left: 4px solid var(--blue-yonder);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  animation: toast-in 220ms ease-out both;
+}
+.toast p {
+  flex: 1;
+  font-size: var(--text-body);
+  line-height: 20px;
+}
+.toast--success {
+  border-left-color: #4abc40;
+}
+.toast--error {
+  border-left-color: #ef4040;
+}
+.toast--info {
+  border-left-color: var(--blue-yonder);
+}
+.toast.is-leaving {
+  animation: toast-out 200ms ease-in both;
+}
+.toast__close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  transition: background-color 160ms ease;
+}
+.toast__close:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. Cards, grids and spacing
+
+   One card radius and one padding step per role, and grid gaps from the spacing
+   scale, so every dashboard lines up the same way.
+   -------------------------------------------------------------------------- */
+.panel,
+.alert-card,
+.metric,
+.crew-card {
+  border-radius: var(--radius-card);
+}
+.alert-panel,
+.tasks-panel,
+.timeline-panel,
+.report-card,
+.critical-card,
+.delayed-card,
+.crew-summary-card,
+.actions-card,
+.context-card,
+.reaction-card,
+.alert-card,
+.detail-panel {
+  padding: var(--space-5) var(--space-5);
+}
+.trends-panel {
+  padding: var(--space-5) var(--space-6);
+}
+.metric {
+  padding: var(--space-3) var(--space-4);
+}
+.crew-card {
+  padding: var(--space-4);
+}
+.dashboard-grid,
+.detail-grid,
+.crew-grid,
+.top-panels,
+.bottom-panels,
+.metrics,
+.context-grid,
+.right-column,
+.detail-column,
+.alert-list,
+.timeline-list {
+  gap: var(--space-4);
+}
+/* The metric grid keeps its slightly tighter rhythm. */
+.metrics {
+  gap: var(--space-3);
+}
+/* Grid children must be allowed to shrink, otherwise a wide table pushes the page sideways. */
+.dashboard-grid > *,
+.detail-grid > *,
+.crew-grid > *,
+.top-panels > *,
+.bottom-panels > *,
+.response-grid > *,
+.metrics > * {
+  min-width: 0;
+}
+.app-shell {
+  overflow-wrap: break-word;
+}
+
+/* --------------------------------------------------------------------------
+   7. Accessibility
+   -------------------------------------------------------------------------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--blue-yonder);
+  outline-offset: 2px;
+}
+/* Keyboard focus must not be hidden behind the sticky navbar. */
+:target {
+  scroll-margin-top: 96px;
+}
+
+/* --------------------------------------------------------------------------
+   8. Responsive: tablet (768-1023px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .crew-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .top-panels,
+  .bottom-panels,
+  .detail-grid,
+  .response-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  main {
+    padding-top: var(--space-6);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. Responsive: mobile (320-767px)
+
+   The sidebar becomes an off-canvas drawer: the navbar menu button opens it and
+   the close button, the backdrop or Escape closes it. Nothing overlays the page
+   while it is shut, so no content is ever hidden behind the navigation.
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .topbar {
+    position: sticky;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--space-3);
+    row-gap: var(--space-3);
+    min-height: 0;
+    padding: var(--space-3) var(--space-4);
+    border-radius: 0 0 22px 22px;
+  }
+  .menu-toggle {
+    display: grid;
+  }
+  .brand {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: var(--space-3);
+  }
+  .brand .brand__icon {
+    width: 36px;
+    height: 36px;
+  }
+  .brand strong {
+    font-size: 16px;
+  }
+  .mission-meta {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    row-gap: var(--space-2);
+  }
+  .mission-meta button,
+  .day-select button {
+    min-height: 40px;
+  }
+  /* The ≤720px rule above hid the first button of every group, which also caught the "−"
+     day stepper. Restore it, and hide the decorative bell instead: it has no action. */
+  .day-select__row button:first-of-type {
+    display: block;
+  }
+  .mission-meta > .icon-button {
+    display: none;
+  }
+
+  /* Drawer */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    padding: 0;
+    border: 0;
+    background: rgba(3, 10, 29, 0.64);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 200ms ease, visibility 200ms ease;
+  }
+  .sidebar-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .sidebar {
+    top: 0;
+    left: 0;
+    z-index: 40;
+    gap: var(--space-4);
+    width: min(300px, 84vw);
+    height: 100dvh;
+    max-height: none;
+    padding: var(--space-5) var(--space-4);
+    border-radius: 0 var(--space-6) var(--space-6) 0;
+    transform: translateX(-100%);
+    transition: transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+  }
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+  .sidebar__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    width: 100%;
+  }
+  .sidebar__title {
+    font-family: var(--font-display);
+    font-size: var(--text-card);
+    font-weight: var(--weight-card);
+  }
+  .sidebar .sidebar__close {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    background: rgba(47, 50, 75, 0.4);
+  }
+  .sidebar__group {
+    align-items: stretch;
+    gap: var(--space-2);
+  }
+  .sidebar__item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    width: 100%;
+    height: 52px;
+    padding: 0 var(--space-3);
+    border-radius: 16px;
+  }
+  .sidebar__label {
+    display: inline;
+    font-size: var(--text-body);
+    font-weight: 500;
+  }
+  .sidebar__divider {
+    width: 100%;
+    margin: var(--space-2) 0;
+  }
+
+  /* Content */
+  main {
+    width: 100%;
+    padding: var(--space-6) var(--space-4);
+  }
+  h1 {
+    font-size: 28px;
+    margin-bottom: var(--space-5);
+  }
+  .metrics,
+  .crew-grid,
+  .detail-grid,
+  .dashboard-grid,
+  .top-panels,
+  .bottom-panels,
+  .response-grid,
+  .context-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .alert-panel,
+  .tasks-panel,
+  .timeline-panel,
+  .report-card,
+  .critical-card,
+  .delayed-card,
+  .crew-summary-card,
+  .actions-card,
+  .context-card,
+  .reaction-card,
+  .alert-card,
+  .detail-panel,
+  .trends-panel {
+    padding: var(--space-4);
+  }
+  /* The 7-day sleep figure drops to its own line rather than squeezing the badge. */
+  .crew-row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    row-gap: var(--space-1);
+  }
+  .crew-row__sleep {
+    grid-column: 1 / -1;
+  }
+  /* 16px keeps iOS from zooming in when a numeric field takes focus. */
+  .day-select input,
+  .day-select select,
+  .checkin-form input[type="number"] {
+    font-size: 16px;
+  }
+  .alert-actions button,
+  .checkin-form button,
+  .start-button,
+  .review-button,
+  .window-select button,
+  .crew-select__trigger {
+    min-height: 44px;
+  }
+  .toast-stack {
+    left: var(--space-4);
+    right: var(--space-4);
+    bottom: var(--space-4);
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon,
+  .sidebar__item,
+  .sidebar,
+  .sidebar-backdrop,
+  .menu-toggle,
+  .icon-button,
+  .toast__close {
+    transition: none;
+  }
+  .toast {
+    animation: none;
+  }
+}
+
+/* Final navbar and card-entry refinements. */
+.brand-trigger:hover {
+  background: transparent;
+}
+.mission-meta {
+  min-width: 0;
+}
+.mission-info {
+  min-width: 0;
+}
+.mission-controls {
+  flex: none;
+}
+.mission-stat,
+.day-select {
+  min-width: 0;
+}
+.mission-data-badge {
+  flex: none;
+}
+
+@keyframes dashboard-card-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+.dashboard-main :is(.panel, .alert-card, .metric, .crew-card) {
+  animation: dashboard-card-enter 380ms cubic-bezier(0.2, 0.7, 0.25, 1) both;
+  animation-delay: var(--card-entry-delay, 0ms);
+}
+.dashboard-main > :nth-child(2) {
+  --card-entry-delay: 30ms;
+}
+.dashboard-main > :nth-child(3) {
+  --card-entry-delay: 70ms;
+}
+.dashboard-main > :nth-child(4) {
+  --card-entry-delay: 110ms;
+}
+.dashboard-main
+  :is(.metrics, .crew-grid, .right-column, .detail-column, .top-panels, .bottom-panels, .dashboard-grid, .detail-grid, .response-grid)
+  > :nth-child(1) {
+  --card-entry-delay: 30ms;
+}
+.dashboard-main
+  :is(.metrics, .crew-grid, .right-column, .detail-column, .top-panels, .bottom-panels, .dashboard-grid, .detail-grid, .response-grid)
+  > :nth-child(2) {
+  --card-entry-delay: 80ms;
+}
+.dashboard-main
+  :is(.metrics, .crew-grid, .right-column, .detail-column, .top-panels, .bottom-panels, .dashboard-grid, .detail-grid, .response-grid)
+  > :nth-child(3) {
+  --card-entry-delay: 130ms;
+}
+.dashboard-main
+  :is(.metrics, .crew-grid, .right-column, .detail-column, .top-panels, .bottom-panels, .dashboard-grid, .detail-grid, .response-grid)
+  > :nth-child(4) {
+  --card-entry-delay: 180ms;
+}
+.dashboard-main
+  :is(.metrics, .crew-grid, .right-column, .detail-column, .top-panels, .bottom-panels, .dashboard-grid, .detail-grid, .response-grid)
+  > :nth-child(n + 5) {
+  --card-entry-delay: 220ms;
+}
+
+@media (max-width: 1023px) {
+  .topbar {
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: var(--space-3);
+    min-height: 0;
+  }
+  .mission-meta {
+    flex: 1 0 100%;
+    justify-content: space-between;
+    gap: var(--space-4);
+    text-align: left;
+  }
+  .mission-info {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3) var(--space-4);
+    text-align: left;
+  }
+  .mission-controls {
+    display: contents;
+  }
+  .mission-controls > .mission-stat--day {
+    grid-column: 1;
+  }
+  .mission-controls > .day-select--day {
+    grid-column: 1 / -1;
+  }
+  .mission-controls > .day-select--astronaut {
+    grid-column: 1;
+  }
+  .mission-controls > .mission-data-badge {
+    grid-column: 2;
+    align-self: end;
+  }
+}
+
+@media (max-width: 767px) {
+  .topbar {
+    column-gap: var(--space-3);
+    row-gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+  .dashboard-switcher {
+    flex: 1 1 0;
+  }
+  .brand-trigger {
+    width: 100%;
+    gap: var(--space-2);
+  }
+  .brand .logo-wrap,
+  .brand img {
+    width: 36px;
+    height: 39px;
+  }
+  .brand__icon-wrap {
+    width: 36px;
+    height: 39px;
+  }
+  .brand__icon-wrap .brand__mark {
+    width: 36px;
+    height: 36px;
+  }
+  .brand__copy {
+    flex: 1 1 auto;
+    gap: 3px;
+  }
+  .brand strong {
+    overflow: hidden;
+    font-size: 16px;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .brand span {
+    overflow: hidden;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .brand__chevron {
+    width: 16px;
+  }
+  .dashboard-switcher__menu {
+    left: -56px;
+    width: min(320px, calc(100vw - 32px));
+  }
+  .mission-meta {
+    display: flex;
+    flex: 1 1 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    width: 100%;
+  }
+  .mission-info {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .mission-info > div:not(.mission-controls),
+  .mission-controls > div {
+    min-width: 0;
+  }
+  .mission-info .mission-stat > span,
+  .mission-controls .mission-stat--day > span,
+  .mission-controls .day-select > span {
+    font-size: 11px;
+  }
+  .mission-info .mission-stat > strong,
+  .mission-controls .mission-stat--day > strong {
+    font-size: 13px;
+    line-height: 18px;
+  }
+  .mission-controls > .mission-stat--day {
+    grid-column: 1;
+  }
+  .mission-controls > .day-select--day {
+    grid-column: 1 / -1;
+  }
+  .mission-controls > .day-select--astronaut {
+    grid-column: 1;
+  }
+  .mission-controls > .mission-data-badge {
+    grid-column: 2;
+    align-self: end;
+  }
+  .mission-controls .day-select__row {
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+  }
+  .mission-controls .day-select__row input {
+    width: 64px;
+  }
+  .mission-controls .day-select__row select {
+    max-width: 100%;
+  }
+  .mission-actions {
+    align-self: flex-end;
+    gap: var(--space-2);
+  }
+  .mission-actions .icon-button,
+  .mission-actions .user-button {
+    width: 40px;
+    height: 40px;
+  }
+  .mission-actions .user-button img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-main :is(.panel, .alert-card, .metric, .crew-card),
+  .dashboard-switcher__menu {
+    animation: none;
+  }
+  .dashboard-switcher__option,
+  .brand__chevron {
+    transition: none;
+  }
+}

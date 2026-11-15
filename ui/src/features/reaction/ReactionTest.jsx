@@ -1,20 +1,26 @@
 import { useState } from "react";
 import useReactionTest, { LAPSE_MS, summarize, TRIALS } from "../../hooks/useReactionTest";
+import Icon from "../../components/common/Icon";
 import SectionHeader from "../../components/common/SectionHeader";
 import StatusBadge from "../../components/common/StatusBadge";
+import { useToast } from "../../components/common/toastContext";
 import { icons } from "../../data/icons";
-import { sendPvt } from "../../api";
+import { sendPvt, settings } from "../../api";
 import { useAppState } from "../../state/context";
 
 /**
  * Short reaction test (team design: 10 trials, not the 3-minute PVT-B). Computes pvt_lapses
  * (> 355 ms, V018 to verify), pvt_slowest10_ms and pvt_mean_rt_ms and sends them to /readings.
  * It does not score or triage: alerting is the engine's job.
+ *
+ * The toast reports the real outcome of that POST: success only after the API accepted the
+ * readings. While the request is in flight the button is disabled, so it cannot be sent twice.
  */
 export default function ReactionTest() {
   const { astronautId, day, refreshSoon } = useAppState();
   const { state, times, falseStarts, start, tap } = useReactionTest();
-  const [sent, setSent] = useState(null);
+  const toast = useToast();
+  const [busy, setBusy] = useState(false);
   const result = state === "done" ? summarize(times) : null;
 
   const copy = {
@@ -25,13 +31,21 @@ export default function ReactionTest() {
   }[state];
 
   const send = async () => {
-    setSent({ text: "Sending…" });
+    if (busy) return;
+    setBusy(true);
     try {
       await sendPvt(astronautId, { ...result, missionDay: day });
-      setSent({ ok: true, text: `Sent for ${astronautId}, day ${day}. Refreshing in about 10 s…` });
+      // Sample mode returns without sending anything, so it must not claim the data was saved.
+      if (settings.useSamples) {
+        toast.info("Sample data: the reaction test was not sent to the API.");
+      } else {
+        toast.success("Reaction Test submitted successfully.");
+      }
       refreshSoon();
     } catch (e) {
-      setSent({ ok: false, text: e.message });
+      toast.error(`Reaction Test was not submitted: ${e.message}`);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -42,7 +56,7 @@ export default function ReactionTest() {
       <p>Tap as quickly as possible when the panel says TAP.</p>
 
       <button className={`test-display ${state}`} onClick={tap} type="button">
-        <img src={icons.testTimer} alt="" />
+        <Icon src={icons.testTimer} size={30} tone="info" />
         <strong>{copy[0]}</strong>
         <span>{copy[1]}</span>
         <em>{copy[2]}</em>
@@ -61,14 +75,9 @@ export default function ReactionTest() {
         {state === "done" ? "Run Test Again" : "Start Reaction Test"}
       </button>
       {result && (
-        <button className="start-button" onClick={send} disabled={!day || sent?.ok}>
-          Send result for {astronautId}
+        <button className="start-button" onClick={send} disabled={busy || !day}>
+          {busy ? "Sending…" : `Send result for ${astronautId}`}
         </button>
-      )}
-      {sent && (
-        <p className={sent.ok === false ? "async-note async-note--error" : "async-note"} role="status">
-          {sent.text}
-        </p>
       )}
       <p className="pvt-note">
         Lapse threshold {LAPSE_MS} ms: V018, to verify (the 10-minute PVT uses 500 ms, V014). The short
